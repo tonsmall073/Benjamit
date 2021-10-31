@@ -9,12 +9,12 @@ class LoginResponseModel
     public object $Content;
     public function __construct()
     {
-        $this->Content = new ContentList();
+        $this->Content = new ContentListResponse();
     }
     public string $Status;
     public string $MessageDesc;
 }
-class ContentList
+class ContentListResponse
 {
     //public string $Id;
     public string $User;
