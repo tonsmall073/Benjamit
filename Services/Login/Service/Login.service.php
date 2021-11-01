@@ -2,7 +2,7 @@
 class LoginService
 {
     public function __construct(
-        private $_context
+        private object $_context
     )
     {}
     public function createDatas($modelReq,$modelRes) : object

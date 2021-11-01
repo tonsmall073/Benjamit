@@ -1,6 +1,6 @@
 <?php
 require('Member.vendor.php');
-$_context = new ConnectDatabases();
+$_context = new ConnectDatabases(true);
 $_POST['Controller'] = 'GetDtServerSideMemberAll';
 if($_POST['Controller'] == 'GetDtServerSideMemberAll')
 {

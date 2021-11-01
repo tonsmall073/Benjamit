@@ -1,7 +1,7 @@
 <?php
 class ConnectDatabases
 {
-    public function dbBenjamit($attrError = false)
+    public function dbBenjamit(bool $attrError = false)  : object|bool
     {
         try
         {
@@ -16,6 +16,7 @@ class ConnectDatabases
         catch(Exception $e)
         {
             echo "Connection failed database Benjamit error message ".$e->getMessage();
+            exit();
         }
     }
 }

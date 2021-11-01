@@ -2,10 +2,10 @@
     class MemberService
     {
         public function __construct(
-            private $_context
+            private object $_context
         )
         {}
-        public function createDatasMemberForDataTableServerSideScript($modelReq,$modelRes)
+        public function createDatasMemberForDataTableServerSideScript($modelReq,$modelRes) : object
         {
             $datas = $this->getMember('',$modelReq->LimitStart,$modelReq->LimitLength);
             if($datas == 'err')
@@ -25,7 +25,11 @@
             $modelRes->Status = 200;
             return $modelRes;
         }
-        private function getMember($valSearch = null,$valLimitStart = 0,$valLimitLength = 0)
+        private function getMember(
+            string $valSearch = null,
+            int $valLimitStart = 0,
+            int $valLimitLength = 0
+        ) : array|string
         {
             try
             {
@@ -48,7 +52,7 @@
                 return 'err';
             }
         }
-        private function mapModelDatasListResponse($params,$modelRes)
+        private function mapModelDatasListResponse(array $params,object $modelRes) : string
         {
             try
             {
@@ -61,7 +65,7 @@
                     $modelRes->Datas[$row]->BirthDate = $datas['BirthDate'];
                     $modelRes->Datas[$row]->Year = $convert->ceBirthDateToCurrenYear($datas['BirthDate']);
                     $modelRes->Datas[$row]->ActiveStatus = $datas['ActiveStatus'];
-                    $modelRes->Datas[$row]->UserRights = $datas['UserRights'];
+                    $modelRes->Datas[$row]->UserRights = $datas['IdUserRights'];
                 }
                 return 'success';
             }

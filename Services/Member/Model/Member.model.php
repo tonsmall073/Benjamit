@@ -8,14 +8,14 @@ class MemberDataTableServerSideScriptResponseModel
 {
     public array $Datas = array();
     public int $Status = 0;
-    public function arrPushDatasList()
+    public function arrPushDatasList() : int
     {
-        $amountArrList = array_push($this->Datas,new MemberDatasList());
+        $amountArrList = array_push($this->Datas,new MemberDatasListResponse());
         $positionArr = (int) $amountArrList - (int) 1;
         return $positionArr;
     }
 }
-Class MemberDatasList
+Class MemberDatasListResponse
 {
     public string $FullName;
     public string $NickName;

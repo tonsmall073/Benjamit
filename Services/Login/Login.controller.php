@@ -3,7 +3,7 @@ session_start();
 
 require('Login.vendor.php');
 
-$_context = new ConnectDatabases();
+$_context = new ConnectDatabases(true);
 
 if($_POST['Controller'] == 'CheckLogin')
 {
