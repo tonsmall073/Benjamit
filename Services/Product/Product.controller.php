@@ -30,6 +30,9 @@ if($_POST['Controller'] == 'AddProduct')
         $modelReq->ProductPrice[$row]->IdBarcode = $_POST['IdBarcode'][$index];
     }
 
+    $service = new ProductService($_context->dbBenjamit());
+    $res = $service->createAddProduct($modelReq,$modelRes);
+    echo json_encode($res);
 }
 if($_POST['Controller'] == 'UpdateProduct')
 {

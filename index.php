@@ -1,11 +1,13 @@
 <?php
 require('checkLogin.php');
+$_username = base64_encode($_SESSION['Username']);
+$_password = base64_encode($_SESSION['Password']);
 echo "
     <script>
         var _FullName = '$_SESSION[FullName]';
         var _NickName = '$_SESSION[NickName]';
-        var _Username = '$_SESSION[Username]';
-        var _Password = '$_SESSION[Password]';
+        var _Username = '$_username';
+        var _Password = '$_password';
     </script>
 ";
 ?>

@@ -10,21 +10,29 @@ class AddProductRequestModel
 
     public function arrayPushProductPictureList() : int
     {
-        $amountArrList = array_push($this->ProductPicture,new ProductPictureListRequest());
+        $amountArrList = array_push(
+            $this->ProductPicture,
+            new ProductPictureListRequest()
+        );
         $positionArr = (int) $amountArrList - (int) 1;
         return $positionArr;
     }
 
     public function arrayPushProductRelatedList() : int
     {
-        $amountArrList = array_push($this->ProductRelated,new ProductRelatedListRequest());
+        $amountArrList = array_push(
+            $this->ProductRelated,
+            new ProductRelatedListRequest()
+        );
         $positionArr = (int) $amountArrList - (int) 1;
         return $positionArr;
     }
 
     public function arrayPushProductPriceList() : int
     {
-        $amountArrList = array_push($this->ProductPrice,new ProductPriceListRequest());
+        $amountArrList = array_push($this->ProductPrice,
+        new ProductPriceListRequest()
+    );
         $positionArr = (int) $amountArrList - (int) 1;
         return $positionArr;
     }
@@ -57,21 +65,5 @@ class AddProductResponseModel
 {
     public int $Status = 0;
     public String $MessageDesc;
-}
-
-//test
-$FdatatoBase64 = "";
-$Fexp = explode(',',$FdatatoBase64);
-$Fcat = explode('/',$Fexp[0]);
-$Ftype = explode(';',$Fcat[1]);
-
-$boo = @file_put_contents("../../../Assets/Images/Products/test001.".$Ftype[0],base64_decode($Fexp[1]),0);
-if($boo)
-{
-    echo "Success";
-}
-else
-{
-    echo "Failed";
 }
 ?>
