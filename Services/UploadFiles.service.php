@@ -13,17 +13,29 @@ class UploadFilesService
         if(count($fileNameExtensionAndEnBase) == 2) return false;
 
         $pathUpload = $pathUploadFile.$fileName.".".$fileNameExtensionAndEnBase[0];
-        $res = @file_put_contents($pathUpload,base64_decode($typeAndData[1]),0);
+        $resUpload = @file_put_contents($pathUpload,base64_decode($typeAndData[1]),0);
 
-        $fileSuccess = "$fileName.$fileNameExtensionAndEnBase[0]";
-        if($res)
+        $res = "$fileName.$fileNameExtensionAndEnBase[0]";
+        if($resUpload)
         {
-            return $fileSuccess;
+            return $res;
         }
         else
         {
             return false;
         }
+    }
+
+    public function deleteFilesMulti($filePath,$paramFiles) : array
+    {
+        $resList = [];
+        $delFileName = null;
+        foreach($paramFiles as $datafileName)
+        {
+            $delFileName = $filePath.$datafileName;
+            array_push($statusList,unlink($delFileName));
+        }
+        return $resList;
     }
 }
 ?>

@@ -33,6 +33,32 @@ class ProductService
             return $modelRes;
         }
 
+        if(!empty($modelReq->ProductRelated))
+        {
+            $resProRel = $this->insertProductRelatedName($modelReq->ProductRelated,$resLastIdProName);
+
+            if($resProRel == false)
+            {
+                $this->_context->rollBack();
+                $modelRes->Status = 500;
+                $modelRes->MessageDesc = 'Method insertProductRelatedName Error';
+                return $modelRes;
+            }
+        }
+
+        if(!empty($modelReq->ProductPrice))
+        {
+            $resProPrice = $this->insertProductPrice($modelReq->ProductPrice,$resLastIdProName);
+
+            if($resProPrice == false)
+            {
+                $this->_context->rollBack();
+                $modelRes->Status = 500;
+                $modelRes->MessageDesc = 'Method insertProductPrice Error';
+                return $modelRes;
+            }
+        }
+
         $serviceUpFiles = new UploadFilesService();
         $pictureList = [];
         $filePath = '../../../../Assets/Images/Products/';
@@ -45,18 +71,18 @@ class ProductService
             array_push($pictureList,$resImg);
         }
 
-        $resProPict = $this->insertProductPicture($pictureList,$resLastIdProName);
-        
-        if($resProPict == false)
+        if(!empty($pictureList))
         {
-            $this->_context->rollBack();
-            foreach($pictureList as $file)
+            $resProPict = $this->insertProductPicture($pictureList,$resLastIdProName);
+        
+            if($resProPict == false)
             {
-                unlink($filePath.$pictureList);
+                $this->_context->rollBack();
+                $serviceUpFiles->deleteFilesMulti($filePath,$pictureList);
+                $modelRes->Status = 500;
+                $modelRes->MessageDesc = 'Method insertProductName Error';
+                return $modelRes;
             }
-            $modelRes->Status = 500;
-            $modelRes->MessageDesc = 'Method insertProductName Error';
-            return $modelRes;
         }
 
         $this->_context->commit();
@@ -83,7 +109,7 @@ class ProductService
         }
 
     }
-    private function insertProductPicture(array $params,int $lastIdProduct) : bool
+    private function insertProductPicture(array $params,int $lastIdProduct) : bool|int
     {
         try
         {
@@ -95,7 +121,9 @@ class ProductService
                 array_push($multiVals,$value);
                 array_push($multiVals,$lastIdProduct);
             }
+
             $questionMarkSqlStr = implode(',',$questionMarks);
+
             $sqlStr = "INSERT INTO ProductPicture (ImageFile,IdProductName) VALUES $questionMarkSqlStr";
             return $this->_context->prepare($sqlStr)->execute($multiVals);
         }
@@ -104,15 +132,54 @@ class ProductService
             return false;
         }
     }
-    private function insertProductRelatedName(array $params,int $lastIdProduct) : int|string
+    private function insertProductRelatedName(array $params,int $lastIdProduct) : bool|int
     {
-        return 0;
+        try
+        {
+            $questionMarks = [];
+            $multiVals = [];
+            foreach($params as $obj)
+            {
+                array_push($questionMarks,'(?,?)');
+                array_push($multiVals,$obj->Name);
+                array_push($multiVals,$lastIdProduct);
+            }
+
+            $questionMarkSqlStr = implode(',',$questionMarks);
+
+            $sqlStr = "INSERT INTO ProductRelatedName (`Name`,IdProductName) VALUES $questionMarkSqlStr";
+            return $this->_context->prepare($sqlStr)->execute($multiVals);
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
     }
-    private function insertProductPrice(array $params,int $lastIdProduct) : int|string
+    private function insertProductPrice(array $params,int $lastIdProduct) : bool|int
     {
-        return 0;
+        try
+        {
+            $questionMarks = [];
+            $multiVals = [];
+            foreach($params as $obj)
+            {
+                array_push($questionMarks,'(?,?,?,?,?)');
+                array_push($multiVals,$obj->CostPrice);
+                array_push($multiVals,$obj->SalePrice);
+                array_push($multiVals,$obj->lastIdProduct);
+                array_push($multiVals,$obj->IdUnitType);
+                array_push($multiVals,$obj->IdBarcode);
+            }
+
+            $questionMarkSqlStr = implode(',',$questionMarks);
+
+            $sqlStr = "INSERT INTO ProductPrice (CostPrice,SalePrice,IdProductName,IdUnitType,IdBarcode) VALUES $questionMarkSqlStr";
+            return $this->_context->prepare($sqlStr)->execute($multiVals);
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
     }
-
-
 }
 ?>
