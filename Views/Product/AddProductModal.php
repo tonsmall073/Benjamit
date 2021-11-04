@@ -1,36 +1,51 @@
-<!-- Begin Page Content -->
 <div class="container-fluid">
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">ดูข้อมูลและจัดการ</h1>
-        <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a> -->
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <label>ชื่อสินค้า</label>
+        </div>
+        <div class="col-sm-12">
+
+            <input type="text" class="form-control" name="productName" aria-describedby="emailHelp"
+                placeholder="ชื่อสินค้า" title="กรุณาป้อนข้อมูลชื่อสินค้าด้วยครับ">
+        </div>
     </div>
-    <!-- Content Row -->
-    <div class="card shadow md-4">
-        <nav class="nav nav-pills nav-fill">
-                <a class="nav-item nav-link py-3 active" href="#">ดูข้อมูลสินค้า</a>
-                <a class="nav-item nav-link py-3 " href="#">เพิ่มสินค้า</a>
-                <a class="nav-item nav-link py-3 " href="#">แก้ไขสินค้า</a>
-                <a class="nav-item nav-link py-3 " href="#">ลบสินค้า</a>
-        </nav>
-        <div class="col-lg-6 mt-3">
-        <form>
-  <div class="form-group">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-  </div>
-  <div class="form-group">
-    <label for="exampleInputPassword1">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-  </div>
-  <div class="form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Check me out</label>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <label class="d-inline">รายละเอียดราคาสินค้า</label>
+            <button class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> เพิ่มรายการ</button>
+        </div>
+        <div class="row" name='rowSaleDetail[]'>
+
+            <div class="input-group col-sm-3">
+                <div class="input-group-prepend">
+                    <button class="btn btn-danger" type="button">ลบ</button>
+                </div>
+                <select class="form-control" name="unitType[]" title="กรุณาเลือกหน่วยสินค้าด้วยครับ">
+                    <option value=''>เลือกหน่วย</option>
+                </select>
+            </div>
+            <div class="input-group col-sm-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">ราคาต้นทุน</span>
+                </div>
+                <input type="text" class="form-control" name="costPrice[]" placeholder="ราคาต้นทุน"
+                    title="กรุณาป้อนราคาต้นทุนด้วยครับ">
+            </div>
+            <div class="input-group col-sm-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">ราคาขาย</span>
+                </div>
+                <input type="text" class="form-control" name="salePrice[]" placeholder="ราคาขาย"
+                    title="กรุณาป้อนราคาขายด้วยครับ">
+            </div>
+            <div class="input-group col-sm-3">
+                <input type="text" class="form-control" name="idBarcode[]" placeholder="Id Barcode"
+                    title="กรุณาข้อมูล Id Barcode ด้วยครับ">
+                <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button">Auto</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

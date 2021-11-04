@@ -367,8 +367,8 @@ echo "
                 <!-- End of Topbar -->
 
                 <!-- Main Content -->
-                <div id="content">
-
+                <div class="container-fluid" id="content">
+                    
                 </div>
                 <!-- End of Main Content -->
 
