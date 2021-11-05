@@ -51,7 +51,92 @@ async function openAddProductFormModal() {
         await $('#productModal').modal('show');
         return true;
     } catch (err) {
-        await alert(`Function openAddProductFormModal Error : ${err.message}`);
+        alert(`Function openAddProductFormModal Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function saveProduct() {
+    try {
+        let chkSwal2Alerted = 0;
+        let elemAlert = null;
+
+        const elemProductName = document.getElementsByName('ProductName');
+        const elemRowSaleDetail = document.getElementsByName('RowSaleDetail[]');
+        const elemUnitType = document.getElementsByName('UnitType[]');
+        const elemCostPrice = document.getElementsByName('CostPrice[]');
+        const elemSalePrice = document.getElementsByName('SalePrice[]');
+        const elemIdBarcode = document.getElementsByName('IdBarcode[]');
+
+        if (elemProductName[0].value == '') {
+            elemProductName[0].classList.add('bg-border-danger-input-empty');
+            if (chkSwal2Alerted == 0) {
+                elemAlert = elemProductName[0];
+                chkSwal2Alerted = 1;
+            }
+        } else {
+            elemProductName[0].classList.remove('bg-border-danger-input-empty');
+        }
+        for (let index = 0; index < elemRowSaleDetail.length; index++) {
+            if (elemUnitType[index].value == '') {
+                elemUnitType[index].classList.add('bg-border-danger-input-empty');
+                if (chkSwal2Alerted == 0) {
+                    elemAlert = elemUnitType[index];
+                    chkSwal2Alerted = 1;
+                }
+            } else {
+                elemUnitType[index].classList.remove('bg-border-danger-input-empty');
+            }
+
+            if (elemCostPrice[index].value == '') {
+                elemCostPrice[index].classList.add('bg-border-danger-input-empty');
+                if (chkSwal2Alerted == 0) {
+                    elemAlert = elemCostPrice[index];
+                    chkSwal2Alerted = 1;
+                }
+            } else {
+                elemCostPrice[index].classList.remove('bg-border-danger-input-empty');
+            }
+
+            if (elemSalePrice[index].value == '') {
+                elemSalePrice[index].classList.add('bg-border-danger-input-empty');
+                if (chkSwal2Alerted == 0) {
+                    elemAlert = elemSalePrice[index];
+                    chkSwal2Alerted = 1;
+                }
+            } else {
+                elemSalePrice[index].classList.remove('bg-border-danger-input-empty');
+            }
+
+            if (elemIdBarcode[index].value == '') {
+                elemIdBarcode[index].classList.add('bg-border-danger-input-empty');
+                if (chkSwal2Alerted == 0) {
+                    elemAlert = elemIdBarcode[index];
+                    chkSwal2Alerted = 1;
+                }
+            } else {
+                elemIdBarcode[index].classList.remove('bg-border-danger-input-empty');
+            }
+        }
+
+        if (chkSwal2Alerted == 1) {
+            elemAlert.focus();
+            await Swal.fire({
+                "icon": 'warning',
+                "text": elemAlert.title,
+                "showConfirmButton": true,
+                "confirmButtonText": 'OK',
+                "confirmButtonColor": '#fbbc05',
+                "timer": 5000
+            });
+
+            return false;
+        }
+
+        return true;
+
+    } catch (err) {
+        alert(`Function saveProduct Error : ${err.message}`);
         return false;
     }
 }

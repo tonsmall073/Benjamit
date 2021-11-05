@@ -11285,3 +11285,18 @@ body.sidebar-toggled footer.sticky-footer {
   background-image: linear-gradient(60deg, #4e73df 0%, #2a96a5 100%);
   background-size: cover;
 }
+
+.form-login-height {
+  height: 600px;
+}
+
+.input-login-empty {
+  border-color: red;
+}
+
+.bg-border-danger-input-empty {
+  color: #78261f;
+  background-color: #fadbd8;
+  /* border-color: #f8ccc8; */
+  border-color: red;
+}

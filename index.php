@@ -30,6 +30,9 @@ echo "
         <link href="vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
         <link href="css/Font-Nunito.css" rel="stylesheet">
 
+        <!-- SweetAlert2 for all pages-->
+        <link href="css/SweetAlert2/V11.1.9/sweetalert2.css" rel="stylesheet">
+
         <!-- Custom styles for this template-->
         <link href="css/sb-admin-2.css" rel="stylesheet">
 
@@ -422,6 +425,9 @@ echo "
 
         <!-- Custom scripts for all pages-->
         <script src="js/sb-admin-2.js"></script>
+
+        <!-- SweetAlert2 for all pages-->
+        <script src="js/SweetAlert2/V11.1.9/sweetalert2.js"></script>
 
         <!-- Page level plugins -->
         <script src="vendor/chart.js/Chart.js"></script>

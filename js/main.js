@@ -72,7 +72,7 @@ async function asyncAddPressActionClick(attrFocus,keyNum,attrControlScope = '')
     {
         const control = attrControlScope != '' ? 
         document.querySelector(attrControlScope) : document;
-        await control.addEventListener('keypress',async (event) => 
+        control.addEventListener('keypress',async (event) => 
         {
             if(event.keyCode === keyNum)
             {
@@ -87,6 +87,25 @@ async function asyncAddPressActionClick(attrFocus,keyNum,attrControlScope = '')
     catch(err)
     {
         alert(`Function asyncAddPressActionClick Error ${err.message}`);
+        return false;
+    }
+}
+
+//ยังไม่ใช่วิธีที่ดี จำเป็นต้องกระโดดข้ามไป catch ก่อน Error Cannot read properties of undefined (reading 'setAttribute')
+async function asyncAddElemByNameAttrTabIndex(name)
+{
+    try
+    {
+        const elem = document.getElementsByName(name);
+        for(let index = 0; elem.length; index++)
+        {
+            elem[index].tabIndex = index;
+        }
+        return true;
+    }
+    catch(err)
+    {
+        //alert(`Function addElementIndex Error : ${err.message}`);
         return false;
     }
 }

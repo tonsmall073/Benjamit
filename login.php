@@ -16,23 +16,13 @@
         <link href="vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
         <link href="css/Font-Nunito.css" rel="stylesheet">
 
-        <!-- Custom styles for this template-->
-        <link href="css/sb-admin-2.css" rel="stylesheet">
-
         <!-- SweetAlert2 for all pages-->
         <link href="css/SweetAlert2/V11.1.9/sweetalert2.css" rel="stylesheet">
 
+        <!-- Custom styles for this template-->
+        <link href="css/sb-admin-2.css" rel="stylesheet">
+
     </head>
-    <style>
-    .form-login-height {
-        height: 600px;
-    }
-
-    .input-login-empty {
-        border-color: red;
-    }
-
-    </style>
 
     <body class="bg-gradient-primary-login">
 
@@ -109,12 +99,12 @@
         <!-- Core plugin JavaScript-->
         <script src="vendor/jquery-easing/jquery.easing.js"></script>
 
+        <!-- SweetAlert2 for all pages-->
+        <script src="js/SweetAlert2/V11.1.9/sweetalert2.js"></script>
+
         <!-- Custom scripts for all pages-->
         <script src="js/sb-admin-2.js"></script>
         <script src="js/main.js"></script>
-
-        <!-- SweetAlert2 for all pages-->
-        <script src="js/SweetAlert2/V11.1.9/sweetalert2.js"></script>
 
         <script>
         async function checkInputLogin() {
@@ -135,7 +125,7 @@
                                 "text": elem.title,
                                 "showConfirmButton": true,
                                 "confirmButtonText": 'OK',
-                                "confirmButtonColor": '#d33',
+                                "confirmButtonColor": '#fbbc05',
                                 "timer": 5000
                             });
                             chkSwal2Alerted = 1;
