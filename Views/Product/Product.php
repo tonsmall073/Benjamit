@@ -69,53 +69,34 @@ async function saveProduct() {
         const elemIdBarcode = document.getElementsByName('IdBarcode[]');
 
         if (elemProductName[0].value == '') {
-            elemProductName[0].classList.add('bg-border-danger-input-empty');
-            if (chkSwal2Alerted == 0) {
-                elemAlert = elemProductName[0];
-                chkSwal2Alerted = 1;
-            }
-        } else {
-            elemProductName[0].classList.remove('bg-border-danger-input-empty');
+            elemAlert = elemProductName[0];
+            chkSwal2Alerted = 1;
         }
-        for (let index = 0; index < elemRowSaleDetail.length; index++) {
-            if (elemUnitType[index].value == '') {
-                elemUnitType[index].classList.add('bg-border-danger-input-empty');
-                if (chkSwal2Alerted == 0) {
+        if (chkSwal2Alerted == 0) {
+            for (let index = 0; index < elemRowSaleDetail.length; index++) {
+                if (elemUnitType[index].value == '') {
                     elemAlert = elemUnitType[index];
                     chkSwal2Alerted = 1;
+                    break;
                 }
-            } else {
-                elemUnitType[index].classList.remove('bg-border-danger-input-empty');
-            }
 
-            if (elemCostPrice[index].value == '') {
-                elemCostPrice[index].classList.add('bg-border-danger-input-empty');
-                if (chkSwal2Alerted == 0) {
+                if (elemCostPrice[index].value == '') {
                     elemAlert = elemCostPrice[index];
                     chkSwal2Alerted = 1;
+                    break;
                 }
-            } else {
-                elemCostPrice[index].classList.remove('bg-border-danger-input-empty');
-            }
 
-            if (elemSalePrice[index].value == '') {
-                elemSalePrice[index].classList.add('bg-border-danger-input-empty');
-                if (chkSwal2Alerted == 0) {
+                if (elemSalePrice[index].value == '') {
                     elemAlert = elemSalePrice[index];
                     chkSwal2Alerted = 1;
+                    break;
                 }
-            } else {
-                elemSalePrice[index].classList.remove('bg-border-danger-input-empty');
-            }
 
-            if (elemIdBarcode[index].value == '') {
-                elemIdBarcode[index].classList.add('bg-border-danger-input-empty');
-                if (chkSwal2Alerted == 0) {
+                if (elemIdBarcode[index].value == '') {
                     elemAlert = elemIdBarcode[index];
                     chkSwal2Alerted = 1;
+                    break;
                 }
-            } else {
-                elemIdBarcode[index].classList.remove('bg-border-danger-input-empty');
             }
         }
 
@@ -140,4 +121,7 @@ async function saveProduct() {
         return false;
     }
 }
+asyncAddPressActionClickMulti('#productModalButton', 13, '#productModal');
+asyncAddClickAlertInputEmptyMulti('#productModalButton', '#productModal', 'bg-border-danger-input-empty');
+asyncAddEventClearClassInputNotEmptyMulti('#productModal','change','bg-border-danger-input-empty');
 </script>

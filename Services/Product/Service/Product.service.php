@@ -205,7 +205,7 @@ class ProductService
                 array_push($multiVals,$lastIdProduct);
                 array_push($multiVals,$obj->IdUnitType);
 
-                $genIdBarcode = $obj->IdBarcode != '' ? 
+                $genIdBarcode = $obj->IdBarcode != '' && $obj->IdBarcode != 'AutoIdBarcode' ? 
                 $obj->IdBarcode : $lastIdProduct.date('YmdHis').count($questionMarks);
 
                 array_push($multiVals,$genIdBarcode);

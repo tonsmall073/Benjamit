@@ -66,17 +66,17 @@ async function asyncLoadView(path)
     return true;
 }
 
-async function asyncAddPressActionClick(attrFocus,keyNum,attrControlScope = '')
+async function asyncAddPressActionClickMulti(elemNameFocus,keyNum,elemNameControlScope = '')
 {
     try
     {
-        const control = attrControlScope != '' ? 
-        document.querySelector(attrControlScope) : document;
+        const control = elemNameControlScope != '' ? 
+        document.querySelector(elemNameControlScope) : document;
         control.addEventListener('keypress',async (event) => 
         {
             if(event.keyCode === keyNum)
             {
-                const focus = `${attrControlScope} ${attrFocus}`;
+                const focus = `${elemNameControlScope} ${elemNameFocus}`;
                 await event.preventDefault();
                 await document.querySelector(focus).click();
             }
@@ -86,26 +86,79 @@ async function asyncAddPressActionClick(attrFocus,keyNum,attrControlScope = '')
     }
     catch(err)
     {
-        alert(`Function asyncAddPressActionClick Error ${err.message}`);
+        alert(`Function asyncAddPressActionClickMulti Error ${err.message}`);
         return false;
     }
 }
 
-//ยังไม่ใช่วิธีที่ดี จำเป็นต้องกระโดดข้ามไป catch ก่อน Error Cannot read properties of undefined (reading 'setAttribute')
-async function asyncAddElemByNameAttrTabIndex(name)
+//เช็คทั้งหมดเมื่อทำการ Click ให้เอา Class Alert Input เข้ามา กรณีเป็นค่่าว่าง
+async function asyncAddClickAlertInputEmptyMulti(elemFucus,elemNameControlScope,classAlert)
 {
     try
     {
-        const elem = document.getElementsByName(name);
-        for(let index = 0; elem.length; index++)
+        const control = elemNameControlScope != '' ? 
+        document.querySelector(`${elemNameControlScope} ${elemFucus}`) : document;
+
+        control.addEventListener('click',async () => 
         {
-            elem[index].tabIndex = index;
-        }
+            await document.querySelectorAll(`${elemNameControlScope} input`).forEach(async (event) =>
+            {
+                if(event.value == '') event.classList.add(classAlert);
+                else event.classList.remove(classAlert);
+            });
+
+            await document.querySelectorAll(`${elemNameControlScope} select`).forEach(async (event) =>
+            {
+                if(event.value == '') event.classList.add(classAlert);
+                else event.classList.remove(classAlert);
+            });
+
+            await document.querySelectorAll(`${elemNameControlScope} textarea`).forEach(async (event) =>
+            {
+                if(event.value == '') event.classList.add(classAlert);
+                else event.classList.remove(classAlert);
+            });
+        });
+    return true;
+    }
+    catch(err)
+    {
+        alert(`Function asyncAddClickAlertInputEmptyMulti Error : ${err.message}`);
+        return false;
+    }
+}
+
+//เช็คทั้งหมดเมื่อเกิด Event เช็คไม่ใช่ค่าว่าง ให้เอา Class Alert Input ออกไป
+async function asyncAddEventClearClassInputNotEmptyMulti(elemNameControlScope,setEvent,removeClass)
+{
+    try
+    {
+        const control = elemNameControlScope != '' ? 
+        document.querySelector(elemNameControlScope) : document;
+        control.addEventListener(setEvent,async () => 
+        {
+            
+            await document.querySelectorAll(`${elemNameControlScope} input`).forEach(async (event) =>
+            {
+                if(event.value != '') event.classList.remove(removeClass);
+            });
+
+            await document.querySelectorAll(`${elemNameControlScope} select`).forEach(async (event) =>
+            {
+                if(event.value != '') event.classList.remove(removeClass);
+            });
+
+            await document.querySelectorAll(`${elemNameControlScope} textarea`).forEach(async (event) =>
+            {
+                if(event.value != '') event.classList.remove(removeClass);
+            });
+        });
+        
         return true;
     }
     catch(err)
     {
-        //alert(`Function addElementIndex Error : ${err.message}`);
+        alert(`Function asyncAddEventClearClassInputNotEmptyMulti Error : ${err.message}`);
         return false;
     }
 }

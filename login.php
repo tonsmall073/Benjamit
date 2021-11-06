@@ -109,34 +109,24 @@
         <script>
         async function checkInputLogin() {
             try {
-                let chkSwal2Alerted = 0;
-
                 const forms = document.querySelectorAll('#userLogin input');
 
                 for (const elem of forms) {
                     if ($(`#${elem.id}`).val() == '') {
-                        $(`#${elem.id}`).addClass('input-login-empty alert-danger');
 
-                        if (chkSwal2Alerted == 0) {
-                            await $(`#${elem.id}`).focus();
+                        await $(`#${elem.id}`).focus();
 
-                            await Swal.fire({
-                                "icon": 'warning',
-                                "text": elem.title,
-                                "showConfirmButton": true,
-                                "confirmButtonText": 'OK',
-                                "confirmButtonColor": '#fbbc05',
-                                "timer": 5000
-                            });
-                            chkSwal2Alerted = 1;
-                        }
-                    } else {
-                        $(`#${elem.id}`).removeClass('input-login-empty alert-danger');
+                        await Swal.fire({
+                           "icon": 'warning',
+                            "text": elem.title,
+                            "showConfirmButton": true,
+                            "confirmButtonText": 'OK',
+                            "confirmButtonColor": '#fbbc05',
+                            "timer": 5000
+                        });
+                        return false;
                     }
                 }
-
-                if (chkSwal2Alerted == 1) return false;
-
                 return true;
             } catch (err) {
                 alert(`Function checkInputLogin Error : ${err.message}`);
@@ -186,7 +176,9 @@
             return true;
         }
 
-        asyncAddPressActionClick('#buttonLogin', 13, '#userLogin');
+        asyncAddPressActionClickMulti('#buttonLogin', 13, '#userLogin');
+        asyncAddClickAlertInputEmptyMulti('#buttonLogin','#userLogin','bg-border-danger-input-empty');
+        asyncAddEventClearClassInputNotEmptyMulti('#userLogin','change','bg-border-danger-input-empty');
         </script>
 
     </body>
