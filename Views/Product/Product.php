@@ -67,6 +67,8 @@ async function saveProduct() {
         const elemCostPrice = document.getElementsByName('CostPrice[]');
         const elemSalePrice = document.getElementsByName('SalePrice[]');
         const elemIdBarcode = document.getElementsByName('IdBarcode[]');
+        const elemUploadImgProduct = document.getElementsByName('UploadImgProduct[]');
+        const elemDataProductImg = document.getElementsByName('DataProductImg[]');
 
         if (elemProductName[0].value == '') {
             elemAlert = elemProductName[0];
@@ -98,6 +100,15 @@ async function saveProduct() {
                     break;
                 }
             }
+            for (let index = 0; index < elemUploadImgProduct.length; index++)
+            {
+                if(elemUploadImgProduct[index].value == '')
+                {
+                    elemAlert = elemUploadImgProduct[index];
+                    chkSwal2Alerted = 1;
+                    break;
+                }
+            }
         }
 
         if (chkSwal2Alerted == 1) {
@@ -114,6 +125,7 @@ async function saveProduct() {
             return false;
         }
 
+        await $('#productModal').modal('hide');
         return true;
 
     } catch (err) {
@@ -122,6 +134,6 @@ async function saveProduct() {
     }
 }
 asyncAddPressActionClickMulti('#productModalButton', 13, '#productModal');
-asyncAddClickAlertInputEmptyMulti('#productModalButton', '#productModal', 'bg-border-danger-input-empty');
-asyncAddEventClearClassInputNotEmptyMulti('#productModal','change','bg-border-danger-input-empty');
+asyncAddClickAlertInputEmptyMulti('#productModalButton', '#productModal', 'is-invalid');
+asyncAddEventClearAlertInputNotEmptyMulti('#productModal', 'change', 'is-invalid');
 </script>

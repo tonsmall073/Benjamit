@@ -38,6 +38,7 @@ echo "
 
         <!-- Custom styles for this page -->
         <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="css/Fabric/V4.6/fabric.css" rel="stylesheet">
 
     </head>
 
@@ -433,6 +434,8 @@ echo "
         <script src="vendor/chart.js/Chart.js"></script>
         <script src="vendor/datatables/jquery.dataTables.js"></script>
         <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
+        <script src="js/Fabric/V4.6/fabric.js"></script>
+        <script src="js/IMask/V6.2.2/imask.js"></script>
         <script src="js/main.js"></script>
 
     </body>

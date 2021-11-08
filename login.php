@@ -177,8 +177,8 @@
         }
 
         asyncAddPressActionClickMulti('#buttonLogin', 13, '#userLogin');
-        asyncAddClickAlertInputEmptyMulti('#buttonLogin','#userLogin','bg-border-danger-input-empty');
-        asyncAddEventClearClassInputNotEmptyMulti('#userLogin','change','bg-border-danger-input-empty');
+        asyncAddClickAlertInputEmptyMulti('#buttonLogin','#userLogin','is-invalid');
+        asyncAddEventClearAlertInputNotEmptyMulti('#userLogin','change','is-invalid');
         </script>
 
     </body>

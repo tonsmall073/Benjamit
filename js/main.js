@@ -129,7 +129,7 @@ async function asyncAddClickAlertInputEmptyMulti(elemFucus,elemNameControlScope,
 }
 
 //เช็คทั้งหมดเมื่อเกิด Event เช็คไม่ใช่ค่าว่าง ให้เอา Class Alert Input ออกไป
-async function asyncAddEventClearClassInputNotEmptyMulti(elemNameControlScope,setEvent,removeClass)
+async function asyncAddEventClearAlertInputNotEmptyMulti(elemNameControlScope,setEvent,removeClass)
 {
     try
     {
@@ -158,7 +158,36 @@ async function asyncAddEventClearClassInputNotEmptyMulti(elemNameControlScope,se
     }
     catch(err)
     {
-        alert(`Function asyncAddEventClearClassInputNotEmptyMulti Error : ${err.message}`);
+        alert(`Function asyncAddEventClearAlertInputNotEmptyMulti Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function asyncfabricAddPutImg(elem,idRenderImg)
+{
+    try
+    {
+        const canvas = this.__canvas = await new fabric.Canvas(idRenderImg);
+        const text = await new fabric.Textbox('MIAMI', {
+            originX: 'left',
+            originY: 'top',
+            fill: 'red',
+            fontSize: 15,
+        });
+
+        await fabric.Image.fromURL(URL.createObjectURL(elem.files[0]),async (img) => {
+	            img.clipTo = async (ctx) => {
+                await text.render(ctx);
+
+            }
+            await canvas.add(img);
+            await canvas.renderAll();
+        });
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function asyncfabricAddPutImg Error : ${err.message}`);
         return false;
     }
 }

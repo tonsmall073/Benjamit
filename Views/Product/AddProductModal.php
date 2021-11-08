@@ -13,14 +13,22 @@
         <div class="col-sm-12">
             <label class="d-inline">รายละเอียดราคาสินค้า</label>
             <button class="btn btn-sm btn-primary" onclick="addProductPriceDetail();"><i class="bi bi-plus"></i>
-                เพิ่มรายการ</button>
+                เพิ่มราคาสินค้า</button>
+        </div>
+    </div>
+    <div class="row form-group" id="productImages">
+        <div class="col-sm-12">
+            <label class="d-inline">รูปภาพสินค้าสินค้า</label>
+            <button class="btn btn-sm btn-primary" onclick="addProductImages();"><i class="bi bi-plus"></i>
+                เพิ่มรูปภาพสินค้า</button>
         </div>
     </div>
 </div>
 
 <script>
 var _idRowPro = 0;
-async function addProductPriceDetail(index = 0) {
+var _idRowImg = 0;
+async function addProductPriceDetail() {
     try {
         const htmlStr = `
         <div class="row border-bottom-dark py-2" id="rowSaleDetail${_idRowPro}" name='RowSaleDetail[]'>
@@ -62,14 +70,98 @@ async function addProductPriceDetail(index = 0) {
         return true;
         
     } catch (err) {
-        alert(`Function htmlProductPriceDetail Error : ${err.message}`);
+        alert(`Function addProductPriceDetail Error : ${err.message}`);
         return false;
     }
+}
+
+async function addProductImages()
+{
+    try
+    {
+        const htmlStr = `
+            <div class='row border-bottom-dark py-2' id='rowProductImg${_idRowImg}'>
+                <div class="col-lg-12 px-auto" name="numberImgProduct[]">
+
+                </div>
+                <div class="input-group col-lg-12 pb-2">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-danger" onclick="delProductImgDetail(${_idRowImg});">ลบ</button>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="UploadImgProduct[]" 
+                        id="uploadImgProduct${_idRowImg}" onchange="putProductImgToCanvas(this,'dataProductImg${_idRowImg}','uploadTextImg${_idRowImg}');"
+                        title="กรุณาเลือกรูปภาพที่จะอัพโหลดด้วยครับ" >
+                        <label class="custom-file-label" id="uploadTextImg${_idRowImg}" for="uploadImgProduct${_idRowImg}">Choose file</label>
+                    </div>
+                </div>
+                <div class='col-lg-12'>
+                    <canvas id="dataProductImg${_idRowImg}" class="fabric-canvas" 
+                    width="700px;" height="700px;" name='DataProductImg[]'></canvas>
+                </div>
+            </div>
+        `;
+        _idRowImg++;
+        await $('#productImages').append(htmlStr);
+        await createConcatTextNumberMulti('numberImgProduct[]','รูปภาพที่');
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function addProductImages Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function createConcatTextNumberMulti(elemName,firstText = '')
+{
+    try
+    {
+        await document.getElementsByName(elemName).forEach(async (elem,key) => {
+            elem.innerHTML = `<b>${firstText} ${key+1}</b>`;
+        });
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function createConcatTextNumberMulti Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function delProductImgDetail(idRow) {
+    try {
+        await $(`#rowProductImg${idRow}`).remove();
+        await createConcatTextNumberMulti('numberImgProduct[]','รูปภาพที่');
+        return true;
+    } catch (err) {
+        alert(`Function delProductImgDetail Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function putProductImgToCanvas(elem,idTarget,idLabel)
+{
+    try
+    {
+        if(elem.files.name == false) return false;
+        document.getElementById(idLabel).innerText = elem.files[0].name;
+        await asyncfabricAddPutImg(elem,idTarget);
+        elem.disabled = true;
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function asyncfabricAddPutImg Error : ${err.message}`);
+        return false;
+    }
+
 }
 
 async function delProductPriceDetail(idRow) {
     try {
         $(`#rowSaleDetail${idRow}`).remove();
+        if(document.getElementsByName('RowSaleDetail[]').length == 0) await addProductPriceDetail();
         return true;
     } catch (err) {
         alert(`Function delProductPriceDetail Error : ${err.message}`);
@@ -92,7 +184,7 @@ async function switchAutoGenIdBarcode(idRow) {
             $(`#idBarcode${idRow}`).attr('readonly',true);
             $(`#idBarcode${idRow}`).val('AutoIdBarcode');
         }
-        $(`#idBarcode${idRow}`).removeClass('bg-border-danger-input-empty');
+        $(`#idBarcode${idRow}`).removeClass('is-invalid');
         return true;
     } catch (err) {
         alert(`Function switchAutoGenIdBarcode Error : ${err.message}`);
