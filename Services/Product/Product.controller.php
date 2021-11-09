@@ -24,8 +24,8 @@ if($_POST['Controller'] == 'AddProduct')
     for($index = 0;$index < count($_POST['IdBarcode']);$index++)
     {
         $row = $modelReq->arrayPushProductPriceList();
-        $modelReq->ProductPrice[$row]->CostPrice = $_POST['CostPrice'][$index];
-        $modelReq->ProductPrice[$row]->SalePrice = $_POST['SalePrice'][$index];
+        $modelReq->ProductPrice[$row]->CostPrice = preg_replace('/[^0-9\.]/','',$_POST['CostPrice'][$index]);
+        $modelReq->ProductPrice[$row]->SalePrice = preg_replace('/[^0-9\.]/','',$_POST['SalePrice'][$index]);
         $modelReq->ProductPrice[$row]->IdUnitType = $_POST['IdUnitType'][$index];
         $modelReq->ProductPrice[$row]->IdBarcode = $_POST['IdBarcode'][$index];
     }

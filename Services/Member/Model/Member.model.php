@@ -6,7 +6,7 @@ class MemberDataTableServerSideScriptRequestModel
 }
 class MemberDataTableServerSideScriptResponseModel
 {
-    public array $Datas = array();
+    public array $Datas = [];
     public int $Status = 0;
     public function arrPushDatasList() : int
     {

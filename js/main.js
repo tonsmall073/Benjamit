@@ -103,20 +103,30 @@ async function asyncAddClickAlertInputEmptyMulti(elemFucus,elemNameControlScope,
         {
             await document.querySelectorAll(`${elemNameControlScope} input`).forEach(async (event) =>
             {
-                if(event.value == '') event.classList.add(classAlert);
+                if(event.value == 0) event.classList.add(classAlert);
                 else event.classList.remove(classAlert);
             });
 
             await document.querySelectorAll(`${elemNameControlScope} select`).forEach(async (event) =>
             {
-                if(event.value == '') event.classList.add(classAlert);
+                if(event.value == 0) event.classList.add(classAlert);
                 else event.classList.remove(classAlert);
             });
 
             await document.querySelectorAll(`${elemNameControlScope} textarea`).forEach(async (event) =>
             {
-                if(event.value == '') event.classList.add(classAlert);
+                if(event.value == 0) event.classList.add(classAlert);
                 else event.classList.remove(classAlert);
+            });
+            /*for use selectize.js*/
+            await document.querySelectorAll(`${elemNameControlScope} .selectized select`).forEach(async (event) =>
+            {
+                // if(event.value == 0) event.parentNode.classList.add(classAlert);
+                // else event.parentNode.classList.remove(classAlert);
+
+                if(event.value == 0) event.parentNode.style.border = 'solid red 1px';
+                else event.parentNode.style.border = 'none';
+
             });
         });
     return true;
@@ -140,17 +150,23 @@ async function asyncAddEventClearAlertInputNotEmptyMulti(elemNameControlScope,se
             
             await document.querySelectorAll(`${elemNameControlScope} input`).forEach(async (event) =>
             {
-                if(event.value != '') event.classList.remove(removeClass);
+                if(event.value != 0) event.classList.remove(removeClass);
             });
 
             await document.querySelectorAll(`${elemNameControlScope} select`).forEach(async (event) =>
             {
-                if(event.value != '') event.classList.remove(removeClass);
+                if(event.value != 0) event.classList.remove(removeClass);
             });
 
             await document.querySelectorAll(`${elemNameControlScope} textarea`).forEach(async (event) =>
             {
-                if(event.value != '') event.classList.remove(removeClass);
+                if(event.value != 0) event.classList.remove(removeClass);
+            });
+            /*for use selectize.js*/
+            await document.querySelectorAll(`${elemNameControlScope} .selectized select`).forEach(async (event) =>
+            {
+                //if(event.value != 0) event.parentNode.classList.remove(removeClass);
+                if(event.value != 0) event.parentNode.style.border = 'none';
             });
         });
         
@@ -189,5 +205,25 @@ async function asyncfabricAddPutImg(elem,idRenderImg)
     {
         alert(`Function asyncfabricAddPutImg Error : ${err.message}`);
         return false;
+    }
+}
+
+async function asyncIMaskSetOptionNumberAddComma(decimals = 0,minNum = 0,maxNum = 0)
+{
+    return {
+        mask: Number,  // enable number mask
+        
+        // other options are optional with defaults below
+        scale: decimals,  // digits after point, 0 for integers
+        signed: false,  // disallow negative
+        thousandsSeparator: ',',  // any single char
+        padFractionalZeros: false,  // if true, then pads zeros at end to the length of scale
+        normalizeZeros: true,  // appends or removes zeros at ends
+        radix: '.',  // fractional delimiter
+        mapToRadix: ['.'],  // symbols to process as radix
+
+        // additional number interval options (e.g.)
+        min: minNum,
+        max: maxNum
     }
 }

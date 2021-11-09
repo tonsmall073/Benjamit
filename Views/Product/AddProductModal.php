@@ -37,7 +37,8 @@ async function addProductPriceDetail() {
                     <button class="btn btn-danger" type="button" name="delProductPriceButton[]" 
                     onclick="delProductPriceDetail(${_idRowPro});">ลบ</button>
                 </div>
-                <select class="form-control" name="UnitType[]" title="กรุณาเลือกหน่วยสินค้าด้วยครับ">
+                <select class="form-control" name="UnitType[]" id="unitType${_idRowPro}" 
+                title="กรุณาเลือกหน่วยสินค้าด้วยครับ">
                     <option value=''>เลือกหน่วย</option>
                 </select>
             </div>
@@ -45,14 +46,14 @@ async function addProductPriceDetail() {
                 <div class="input-group-prepend">
                     <span class="input-group-text">ราคาทุน</span>
                 </div>
-                <input type="text" class="form-control" name="CostPrice[]" value="" placeholder="ราคาทุน"
+                <input type="text" class="form-control text-right" name="CostPrice[]" id="costPrice${_idRowPro}" value="" placeholder="ราคาทุน"
                     title="กรุณาป้อนราคาต้นทุนด้วยครับ">
             </div>
             <div class="input-group col-lg-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text">ราคาขาย</span>
                 </div>
-                <input type="text" class="form-control" name="SalePrice[]" value="" placeholder="ราคาขาย"
+                <input type="text" class="form-control text-right" name="SalePrice[]" id="salePrice${_idRowPro}" value="" placeholder="ราคาขาย"
                     title="กรุณาป้อนราคาขายด้วยครับ">
             </div>
             <div class="input-group col-lg-3">
@@ -66,11 +67,54 @@ async function addProductPriceDetail() {
         </div>`;
 
         await $('#saleProductDetail').append(htmlStr);
+        await IMask(document.getElementById(`costPrice${_idRowPro}`),
+        await asyncIMaskSetOptionNumberAddComma(2,0,1000000));
+        await IMask(document.getElementById(`salePrice${_idRowPro}`),
+        await asyncIMaskSetOptionNumberAddComma(2,0,1000000));
+        await getUnitTypeAllCreateHtmlOptions(`unitType${_idRowPro}`);
+        // await $(`#unitType${_idRowPro}`).selectpicker();
+        $(`#unitType${_idRowPro}`).selectize({
+  create: false,
+  sortField: "text",
+});
+            
         _idRowPro++;
         return true;
         
     } catch (err) {
         alert(`Function addProductPriceDetail Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function getUnitTypeAllCreateHtmlOptions(idName)
+{
+    try
+    {
+        res = await asyncSendPostApi(
+            'Services/DatasAboutProduct/DatasAboutProduct.controller.php',
+            {"Controller":'GetUnitType'});
+
+        if(res.Status != 200)
+        {
+            alert(res.MessageDesc);
+            return false;
+        }
+
+        await res.Datas.forEach(async (datas) => {
+            
+            const elemOption = document.createElement("OPTION");
+            elemOption.value = datas.Id;
+            elemOption.innerText = datas.Name;       
+            await document.getElementById(idName).appendChild(elemOption);     
+        });
+        
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function getUnitTypeAll Error : ${err.message}`);
+        
         return false;
     }
 }

@@ -70,31 +70,31 @@ async function saveProduct() {
         const elemUploadImgProduct = document.getElementsByName('UploadImgProduct[]');
         const elemDataProductImg = document.getElementsByName('DataProductImg[]');
 
-        if (elemProductName[0].value == '') {
+        if (elemProductName[0].value == 0) {
             elemAlert = elemProductName[0];
             chkSwal2Alerted = 1;
         }
         if (chkSwal2Alerted == 0) {
             for (let index = 0; index < elemRowSaleDetail.length; index++) {
-                if (elemUnitType[index].value == '') {
+                if (elemUnitType[index].value == 0) {
                     elemAlert = elemUnitType[index];
                     chkSwal2Alerted = 1;
                     break;
                 }
 
-                if (elemCostPrice[index].value == '') {
+                if (elemCostPrice[index].value == 0) {
                     elemAlert = elemCostPrice[index];
                     chkSwal2Alerted = 1;
                     break;
                 }
 
-                if (elemSalePrice[index].value == '') {
+                if (elemSalePrice[index].value == 0) {
                     elemAlert = elemSalePrice[index];
                     chkSwal2Alerted = 1;
                     break;
                 }
 
-                if (elemIdBarcode[index].value == '') {
+                if (elemIdBarcode[index].value == 0) {
                     elemAlert = elemIdBarcode[index];
                     chkSwal2Alerted = 1;
                     break;
@@ -102,7 +102,7 @@ async function saveProduct() {
             }
             for (let index = 0; index < elemUploadImgProduct.length; index++)
             {
-                if(elemUploadImgProduct[index].value == '')
+                if(elemUploadImgProduct[index].value == 0)
                 {
                     elemAlert = elemUploadImgProduct[index];
                     chkSwal2Alerted = 1;
