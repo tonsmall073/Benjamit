@@ -109,8 +109,17 @@ async function asyncAddClickAlertInputEmptyMulti(elemFucus,elemNameControlScope,
 
             await document.querySelectorAll(`${elemNameControlScope} select`).forEach(async (event) =>
             {
-                if(event.value == 0) event.classList.add(classAlert);
-                else event.classList.remove(classAlert);
+                /*class selectized for use selectize.js ต้องมี div คลุมอีกที*/
+                if(event.value == 0){ 
+                    if(event.classList.contains('selectized'))
+                    event.parentNode.classList.add(classAlert);
+                    else event.classList.add(classAlert);
+                }
+                else {
+                    if(event.classList.contains('selectized'))
+                    event.parentNode.classList.remove(classAlert);
+                    else event.classList.remove(classAlert);
+                }
             });
 
             await document.querySelectorAll(`${elemNameControlScope} textarea`).forEach(async (event) =>
@@ -118,16 +127,8 @@ async function asyncAddClickAlertInputEmptyMulti(elemFucus,elemNameControlScope,
                 if(event.value == 0) event.classList.add(classAlert);
                 else event.classList.remove(classAlert);
             });
-            /*for use selectize.js*/
-            await document.querySelectorAll(`${elemNameControlScope} .selectized select`).forEach(async (event) =>
-            {
-                // if(event.value == 0) event.parentNode.classList.add(classAlert);
-                // else event.parentNode.classList.remove(classAlert);
+            
 
-                if(event.value == 0) event.parentNode.style.border = 'solid red 1px';
-                else event.parentNode.style.border = 'none';
-
-            });
         });
     return true;
     }
@@ -155,18 +156,18 @@ async function asyncAddEventClearAlertInputNotEmptyMulti(elemNameControlScope,se
 
             await document.querySelectorAll(`${elemNameControlScope} select`).forEach(async (event) =>
             {
-                if(event.value != 0) event.classList.remove(removeClass);
+                /*class selectized for use selectize.js ต้องมี div คลุมอีกที*/
+                if(event.value != 0)
+                {
+                    if(event.classList.contains('selectized'))
+                    event.parentNode.classList.remove(removeClass);
+                    else event.classList.remove(removeClass);
+                }
             });
 
             await document.querySelectorAll(`${elemNameControlScope} textarea`).forEach(async (event) =>
             {
                 if(event.value != 0) event.classList.remove(removeClass);
-            });
-            /*for use selectize.js*/
-            await document.querySelectorAll(`${elemNameControlScope} .selectized select`).forEach(async (event) =>
-            {
-                //if(event.value != 0) event.parentNode.classList.remove(removeClass);
-                if(event.value != 0) event.parentNode.style.border = 'none';
             });
         });
         

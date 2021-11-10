@@ -39,12 +39,7 @@ echo "
         <!-- Custom styles for this page -->
         <link href="vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css">
         <link href="css/Fabric/V4.6/fabric.css" rel="stylesheet" type="text/css">
-
-        <!-- <link href="css/BootstrapSelect/V1.13.14/bootstrap-select.css" rel="stylesheet" type="text/css"> -->
-
-        <!-- <link href="css/Select2/select2.css" rel="stylesheet" type="text/css"> -->
-        <!-- <link href="dist/css/bootstrap-select.css" rel="stylesheet" type="text/css"> -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.bootstrap4.css" integrity="sha512-WJ1jnnij6g+LY1YfSmPDGxY0j2Cq/I6PPA7/s4QJ/5sRca5ypbHhFF+Nam0TGfvpacrw9F0OGeZa0ROdNAsaEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="vendor/Selectize/V0.13.3/css/selectize.bootstrap4.css" rel="stylesheet" type="text/css"/>
 
     </head>
 
@@ -442,10 +437,8 @@ echo "
         <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
         <script src="js/Fabric/V4.6/fabric.js"></script>
         <script src="js/IMask/V6.2.2/imask.js"></script>
-        <!-- <script src="js/BootstrapSelect/V1.13.14/bootstrap-select.js"></script> -->
-        <!-- <script src="dist/js/bootstrap-select.js"></script> -->
-        <!-- <script src="js/Select2/select2.js"></script> -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.js" integrity="sha512-pF+DNRwavWMukUv/LyzDyDMn8U2uvqYQdJN0Zvilr6DDo/56xPDZdDoyPDYZRSL4aOKO/FGKXTpzDyQJ8je8Qw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script src="vendor/Selectize/V0.13.3/js/standalone/selectize.js" ></script>
         <script src="js/main.js"></script>
 
     </body>
