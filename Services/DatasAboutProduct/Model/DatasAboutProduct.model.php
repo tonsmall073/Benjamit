@@ -23,4 +23,22 @@ class DatasListResponse
     public int $Id = 0;
     public string $Name;
 }
+
+class SimilarProductNameRequestModel
+{
+    public string $ProductName;
+}
+class SimilarProductNameResponseModel
+{
+    public array $Datas = [];
+    public int $Status = 0;
+    public string $MessageDesc;
+
+    public function arrayPushDatasList() : int
+    {
+        $dataNum = array_push($this->Datas,new DatasListResponse());
+
+        return (int) $dataNum - (int) 1;
+    }
+}
 ?>

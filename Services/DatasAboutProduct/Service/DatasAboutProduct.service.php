@@ -1,5 +1,5 @@
 <?php
-class DatasAboutProductService
+class DatasAboutProductService implements IDatasAboutProductService
 {
     public function __construct(
         private $_context
@@ -36,6 +36,55 @@ class DatasAboutProductService
         return $modelRes;
     }
 
+    public function createDataSimilarProductName(object $modelReq,object $modelRes) : object
+    {
+        $getProName = $this->fetchAllProductName($modelReq->ProductName);
+
+        if($getProName == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method fetchAllProductName Error';
+            return $modelRes;
+        }
+
+        if(empty($getProName))
+        {
+            $modelRes->Status = 204;
+            $modelRes->MessageDesc = 'No Content';
+            return $modelRes;
+        }
+
+        $mapProNameRes = $this->mapDatasListSimilarProductNameRes($modelRes,$getProName);
+
+        if($mapProNameRes == false)
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method mapDatasListSimilarProductNameRes Error';
+            return $modelRes;
+        }
+
+        $modelRes->Status = 200;
+        $modelRes->MessageDesc = 'Success';
+        return $modelRes;
+    }
+
+    private function fetchAllProductName($valSearch = null) : array|string
+    {
+        try
+        {
+            $sqlSearch = $valSearch != null ? " AND ProductName.`Name` LIKE '%$valSearch%' " : "";
+            $sqlStr = "SELECT ProductName.`Id`,ProductName.`Name` FROM ProductName 
+            WHERE ProductName.ActiveStatus = 0 $sqlSearch ";
+
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
     private function fetchAllUnitType() : array|string
     {
         try
@@ -59,6 +108,24 @@ class DatasAboutProductService
                 $row = $modelRes->arrayPushDatasList();
                 $modelRes->Datas[$row]->Id = $datas['Id'];
                 $modelRes->Datas[$row]->Name = $datas['UnitName'];
+            }
+            return true;
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
+
+    private function mapDatasListSimilarProductNameRes(object $modelRes,array $params) : bool
+    {
+        try
+        {
+            foreach($params as $datas)
+            {
+                $row = $modelRes->arrayPushDatasList();
+                $modelRes->Datas[$row]->Id = $datas['Id'];
+                $modelRes->Datas[$row]->Name = $datas['Name'];
             }
             return true;
         }

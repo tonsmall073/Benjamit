@@ -15,7 +15,7 @@ if($_POST['Controller'] == 'AddProduct')
         $modelReq->ProductPicture[$row]->FileToBase64 = $value;
     }
 
-    foreach($_POST['ProductRelated'] as $value)
+    foreach($_POST['ProductRelatedName'] as $value)
     {
         $row = $modelReq->arrayPushProductRelatedList();
         $modelReq->ProductRelated[$row]->Name = $value;

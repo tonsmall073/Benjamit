@@ -4,17 +4,28 @@
             <label>ชื่อสินค้า</label>
         </div>
         <div class="col-sm-12">
-
             <input type="text" class="form-control" name="ProductName" value="" placeholder="ชื่อสินค้า"
                 title="กรุณาป้อนข้อมูลชื่อสินค้าด้วยครับ">
         </div>
     </div>
-    <div class="row form-group" id="saleProductDetail">
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <label class="d-inline">เพิ่มศัพท์การเรียกตัวสินค้า</label>
+            <button class="btn btn-sm btn-primary" onclick="addProductRelatedName();"><i class="bi bi-plus"></i> เพิ่มศัพท์สินค้า</button>
+        </div>
+    </div>
+    <div class="col-sm-12 py-2" id="productRelate">
+
+    </div>
+    <div class="row form-group">
         <div class="col-sm-12">
             <label class="d-inline">รายละเอียดราคาสินค้า</label>
             <button class="btn btn-sm btn-primary" onclick="addProductPriceDetail();"><i class="bi bi-plus"></i>
                 เพิ่มราคาสินค้า</button>
         </div>
+    </div>
+    <div class="col-sm-12 py-2" id="saleProductDetail">
+
     </div>
     <div class="row form-group" id="productImages">
         <div class="col-sm-12">
@@ -23,15 +34,61 @@
                 เพิ่มรูปภาพสินค้า</button>
         </div>
     </div>
+    <div class="col-sm-12 py-2" id="productImages">
+        
+    </div>
+
 </div>
 
 <script>
+var _idRowProRel = 0;
 var _idRowPro = 0;
 var _idRowImg = 0;
+
+async function addProductRelatedName()
+{
+    try
+    {
+        const htmlStr = `
+        <div class="row border-bottom-dark pb-2" name="RowProductRelatedName[]" id="rowProductRelated${_idRowProRel}">
+            <div class="input-group col-sm-12">
+                <div class="input-group-prepend">
+                    <button class="btn btn-danger" type="button" name="delProductRelatedButton[]" 
+                    onclick="delProductRelated(${_idRowProRel});">ลบ</button>
+                </div>
+                <input type="text" name="ProductRelatedName[]" class="form-control" value="" 
+                placeholder="ชื่อศัพท์การเรียกสินค้า" title="กรุณาคีย์ชื่อศัพท์การเรียกสินค้าด้วยครับ">
+            </div>
+        </div>`;
+        await $('#productRelate').append(htmlStr);
+        _idRowProRel++;
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function addProductRelatedName Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function delProductRelated(idRow)
+{
+    try
+    {
+        await $(`#rowProductRelated${idRow}`).remove();
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function delProductRelated Error : ${err.message}`);
+        return false;
+    }
+}
+
 async function addProductPriceDetail() {
     try {
         const htmlStr = `
-        <div class="row border-bottom-dark py-2" id="rowSaleDetail${_idRowPro}" name='RowSaleDetail[]'>
+        <div class="row border-bottom-dark pb-2" id="rowSaleDetail${_idRowPro}" name='RowSaleDetail[]'>
             <div class="input-group col-lg-3">
                 <div class="input-group-prepend">
                     <button class="btn btn-danger" type="button" name="delProductPriceButton[]" 
@@ -124,7 +181,7 @@ async function addProductImages()
     try
     {
         const htmlStr = `
-            <div class='row border-bottom-dark py-2' id='rowProductImg${_idRowImg}'>
+            <div class='row border-bottom-dark pb-2' id='rowProductImg${_idRowImg}'>
                 <div class="col-lg-12 px-auto" name="numberImgProduct[]">
 
                 </div>

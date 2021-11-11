@@ -14,4 +14,17 @@ if($_POST['Controller'] == 'GetUnitType')
 
     echo json_encode($res);
 }
+
+if($_POST['Controller'] == 'GetSimilarProductName')
+{
+    $modelReq = new SimilarProductNameRequestModel();
+    $modelReq->ProductName = $_POST['ProductName'];
+
+    $modelRes = new SimilarProductNameResponseModel();
+
+    $service = new DatasAboutProductService($_context->dbBenjamit());
+    $res = $service->createDataSimilarProductName($modelReq,$modelRes);
+
+    echo json_encode($res);
+}
 ?>

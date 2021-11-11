@@ -14,7 +14,7 @@
         <!-- Custom fonts for this template-->
         <link href="vendor/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
         <link href="vendor/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
-        <link href="css/Font-Nunito.css" rel="stylesheet">
+        <!-- <link href="css/Font-Nunito.css" rel="stylesheet"> -->
 
         <!-- SweetAlert2 for all pages-->
         <link href="css/SweetAlert2/V11.1.9/sweetalert2.css" rel="stylesheet">
@@ -140,7 +140,7 @@
 
             if (chkInput != true) return false;
 
-            let createDatas = new FormData();
+            const createDatas = new FormData();
             createDatas.append('Controller', 'CheckLogin');
             createDatas.append('Username', $('#inputUsername').val());
             createDatas.append('Password', $('#inputPassword').val());

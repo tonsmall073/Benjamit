@@ -62,6 +62,8 @@ async function saveProduct() {
         let elemAlert = null;
 
         const elemProductName = document.getElementsByName('ProductName');
+        const elemRowProductRelated = document.getElementsByName('RowProductRelatedName[]');
+        const elemProductRelated = document.getElementsByName('ProductRelatedName[]');
         const elemRowSaleDetail = document.getElementsByName('RowSaleDetail[]');
         const elemUnitType = document.getElementsByName('UnitType[]');
         const elemCostPrice = document.getElementsByName('CostPrice[]');
@@ -73,6 +75,15 @@ async function saveProduct() {
         if (elemProductName[0].value == 0) {
             elemAlert = elemProductName[0];
             chkSwal2Alerted = 1;
+        }
+        if (chkSwal2Alerted == 0) {
+            for (let index = 0; index < elemRowProductRelated.length; index++) {
+                if (elemProductRelated[index].value == 0) {
+                    elemAlert = elemProductRelated[index];
+                    chkSwal2Alerted = 1;
+                    break;
+                }
+            }
         }
         if (chkSwal2Alerted == 0) {
             for (let index = 0; index < elemRowSaleDetail.length; index++) {
@@ -100,10 +111,10 @@ async function saveProduct() {
                     break;
                 }
             }
-            for (let index = 0; index < elemUploadImgProduct.length; index++)
-            {
-                if(elemUploadImgProduct[index].value == 0)
-                {
+        }
+        if (chkSwal2Alerted == 0) {
+            for (let index = 0; index < elemUploadImgProduct.length; index++) {
+                if (elemUploadImgProduct[index].value == 0) {
                     elemAlert = elemUploadImgProduct[index];
                     chkSwal2Alerted = 1;
                     break;
@@ -124,6 +135,82 @@ async function saveProduct() {
 
             return false;
         }
+
+        const resChkPro = await asyncSendPostApi('Services/DatasAboutProduct/DatasAboutProduct.controller.php', {
+            "Controller": 'GetSimilarProductName',
+            "ProductName": elemProductName[0].value
+        });
+
+        console.log(resChkPro);
+        if (resChkPro.Status != 200 && resChkPro.Status != 204) {
+            alert(resChkPro.MessageDesc);
+            return false;
+        }
+
+        if (resChkPro.length != 0) {
+            $resSwal2 = await Swal.fire({
+                "title": 'Do you want to save the changes?',
+                "showDenyButton": true,
+                "showConfirmButton": true,
+                "confirmButtonText": 'Save',
+                "confirmButtonColor": '#34a853',
+                "denyButtonText": `Don't save`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    return true;
+                } else if (result.isDenied) {
+                    return false;
+                }
+            });
+            if ($resSwal2 == true) {
+                alert('ผ่านได้');
+                return false;
+            } else {
+                alert('ไม่ให้ผ่าน');
+                return false;
+            }
+        }
+
+        const createFormDatas = new FormData();
+        createFormDatas.append("Controller", 'AddProduct');
+        createFormDatas.append("ProductName", 'elemProductName');
+
+        await elemProductRelated.forEach(async (elem, key) => {
+            createFormDatas.append(`ProductRelatedName[${key}]`, elem.value);
+        });
+
+        await elemUnitType.forEach(async (elem, key) => {
+            createFormDatas.append(`UnitType[${key}]`, elemUnitType[key].value);
+            createFormDatas.append(`CostPrice[${key}]`, elemCostPrice[key].value);
+            createFormDatas.append(`SalePrice[${key}]`, elemSalePrice[key].value);
+            createFormDatas.append(`IdBarcode[${key}]`, elemIdBarcode[key].value);
+        });
+
+        await elemDataProductImg.forEach(async (elem, key) => {
+            createFormDatas.append(`ProductPicture[${key}]`, elem.toDataURL());
+        });
+
+        let req = {};
+
+        await createFormDatas.forEach(async (value, key) => {
+            req[key] = value;
+        });
+
+        console.log(JSON.stringify(req));
+
+        //const resAddPro = await asyncSendPostApi('Services/Product/Product.controller.php/',req);
+
+        return false;
+
+        await Swal.fire({
+            "icon": 'warning',
+            "text": `บันข้อมูลสินค้าชื่อ ${elemProductName.value} เรียบร้อยแล้วครับ`,
+            "showConfirmButton": true,
+            "confirmButtonText": 'OK',
+            "confirmButtonColor": '#fbbc05',
+            "timer": 5000
+        });
 
         await $('#productModal').modal('hide');
         return true;
