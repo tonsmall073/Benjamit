@@ -1,10 +1,8 @@
 <?php 
 class SecuritySystemService
 {
-    public function __construct(
-        public object $_context
-    ){}
     public static function checkUser(
+        object $context, 
         string $EnCode64Username,
         string $EnCode64Password,
         string|int $UserRights = null // สิทธิการใช้งาน 1 = Admin 2 = Employee 3 = Member เอาหลายสิทธื ใส่ 1,2 ต่อไปเลื่อยๆ
@@ -14,16 +12,16 @@ class SecuritySystemService
         {
             $username = base64_decode($EnCode64Username);
             $password = base64_decode($EnCode64Password);
-            $sqlWhereStr = $UserRights != null ? " AND IdUserRights IN($UserRights) " : "";
+            $sqlWhereStr = $UserRights != null ? " AND Member.IdUserRights IN($UserRights) " : "";
 
-            $sqlStr = "SELECT Memeber.Id FROM Memeber WHERE 
+            $sqlStr = "SELECT Member.Id FROM Member WHERE 
             Member.UserId != '' AND
             Member.Password != '' AND 
             Member.UserId = '$username' AND
             Member.Password = '$password' 
             $sqlWhereStr";
 
-            $info = self::$_context->query($sqlStr)->fetch(5);
+            $info = $context->query($sqlStr)->fetch(5);
 
             if(!empty($info)) return $info;
 

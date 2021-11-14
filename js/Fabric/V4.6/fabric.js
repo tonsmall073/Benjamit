@@ -14243,9 +14243,9 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
     /**
      * Size of object's controlling corners (in pixels)
      * @type Number
-     * @default
+     * @default 13
      */
-    cornerSize:               13,
+    cornerSize:               40,
 
     /**
      * Size of object's controlling corners when touch interaction is detected
@@ -14287,7 +14287,7 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      * @type String
      * @default
      */
-    borderColor:              'rgb(178,204,255)',
+    borderColor:              'rgb(0,0,0)', //default rgb(178,204,255)
 
     /**
      * Array specifying dash pattern of an object's borders (hasBorder must be true)
@@ -14301,7 +14301,7 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      * @type String
      * @default
      */
-    cornerColor:              'rgb(178,204,255)',
+    cornerColor:              'rgb(0,0,0,0.0)', //default rgb(178,204,255)
 
     /**
      * Color of controlling corners of an object (when it's active and transparentCorners false)

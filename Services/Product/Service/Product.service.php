@@ -5,9 +5,10 @@ class ProductService
         private object $_context
     )
     {}
+
     public function createAddProduct(object $modelReq,object $modelRes) : object
     {
-        $memRes = SecuritySystemService::checkUser($modelReq->Username,$modelReq->Password,'1');
+        $memRes = SecuritySystemService::checkUser($this->_context,$modelReq->Username,$modelReq->Password,'1');
 
         if($memRes == false)
         {
@@ -24,7 +25,7 @@ class ProductService
 
         $this->_context->beginTransaction();
         
-        $resLastIdProName = $this->insertProductName($modelReq->ProductName);
+        $resLastIdProName = $this->insertProductName($modelReq->ProductName,$memRes->Id);
         if($resLastIdProName == false)
         {
             $this->_context->rollBack();
@@ -74,7 +75,17 @@ class ProductService
             return $modelRes;
         }
             
-        $resProPrice = $this->insertProductPrice($modelReq->ProductPrice,$resLastIdProName);
+        $resLastIdProPrice = $this->getLastIdProductPrice();
+
+        if($resLastIdProPrice == 'err')
+        {
+            $this->_context->rollBack();
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getLastIdProductPrice Error';
+            return $modelRes; 
+        }
+
+        $resProPrice = $this->insertProductPrice($modelReq->ProductPrice,$memRes->Id,$resLastIdProName,$resLastIdProPrice);
 
         if($resProPrice == false)
         {
@@ -86,13 +97,13 @@ class ProductService
         
         $serviceUpFiles = new UploadFilesService();
         $pictureList = [];
-        $filePath = '../../../../Assets/Images/Products/';
+        $filePath = '../../Assets/Images/Products/';
         
         foreach($modelReq->ProductPicture as $obj)
         {
             $resImg = $serviceUpFiles
             ->dataTypeBase64MakeToFile($obj->FileToBase64,$filePath,
-            $memRes->Id.$resLastIdProName.date('YmdHis').count($pictureList));
+            $memRes->Id.$resLastIdProName.$resLastIdProPrice.date('Ymd').count($pictureList));
             array_push($pictureList,$resImg);
         }
 
@@ -126,16 +137,18 @@ class ProductService
         
         return $modelRes;
     }
+
     public function createEditProduct(object $modelReq,object $modelRes) : object
     {
         return (object) ['datas' => 0];
     }
-    private function insertProductName(string $valName) : int|bool
+
+    private function insertProductName(string $valName,int $idMember) : int|bool
     {
         try
         {
-            $sqlStr = "INSERT INTO ProductName (`Name`) VALUES (?)";
-            $this->_context->prepare($sqlStr)->execute([$valName]);
+            $sqlStr = "INSERT INTO ProductName (`Name`,`IdMemberSave`,`SaveDate`) VALUES (?,?,NOW())";
+            $this->_context->prepare($sqlStr)->execute([$valName,$idMember]);
             return $this->_context->lastInsertId();
         }
         catch(Exception $e)
@@ -144,6 +157,7 @@ class ProductService
         }
 
     }
+
     private function insertProductPicture(array $params,int $lastIdProduct) : bool|int
     {
         try
@@ -167,6 +181,7 @@ class ProductService
             return false;
         }
     }
+
     private function insertProductRelatedName(array $params,int $lastIdProduct) : bool|int
     {
         try
@@ -190,7 +205,23 @@ class ProductService
             return false;
         }
     }
-    private function insertProductPrice(array $params,int $lastIdProduct) : bool|int
+
+    private  function getLastIdProductPrice() : int|string
+    {
+        try
+        {
+            $sqlStr = "SELECT ProductPrice.Id FROM ProductPrice 
+            ORDER BY ProductPrice.Id DESC LIMIT 0,1";
+            $res = $this->_context->query($sqlStr)->fetch(2);
+
+            return !empty($res['Id']) ? $res['Id'] : 0;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+    private function insertProductPrice(array $params,int $idMember,int $lastIdProduct,int $lastIdProPrice) : bool|int
     {
         try
         {
@@ -206,7 +237,7 @@ class ProductService
                 array_push($multiVals,$obj->IdUnitType);
 
                 $genIdBarcode = $obj->IdBarcode != '' && $obj->IdBarcode != 'AutoIdBarcode' ? 
-                $obj->IdBarcode : $lastIdProduct.date('YmdHis').count($questionMarks);
+                $obj->IdBarcode : $idMember.$lastIdProduct.$lastIdProPrice.date('Ymd').count($questionMarks);
 
                 array_push($multiVals,$genIdBarcode);
             }
@@ -226,25 +257,22 @@ class ProductService
     {
         try
         {
-            $questionMarks = [];
             $multiVals = [];
-
             foreach($params as $obj)
             {
-                array_push($questionMarks,'?');
-                array_push($multiVals,$obj->IdBarcode);
+                array_push($multiVals,"'$obj->IdBarcode'");
             }
 
-            $questionMarkSqlStr = implode(',',$questionMarks);
+            $sqlIn = implode(',',$multiVals);
 
-            $sqlStr = "SELECT IdBarcode FROM ProductPrice WHERE IdBarcode IN ($questionMarkSqlStr)";
-
-            $res = $this->_context->prepare($sqlStr)->execute($multiVals)->fetchAll(2);
+            $sqlStr = "SELECT IdBarcode FROM ProductPrice WHERE IdBarcode IN ($sqlIn)";
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
 
             return $res;
         }
         catch(Exception $e)
         {
+            echo $e->getMessage();
             return 'err';
         }
     }

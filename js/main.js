@@ -185,12 +185,7 @@ async function asyncfabricAddPutImg(elem,idRenderImg)
     try
     {
         const canvas = this.__canvas = await new fabric.Canvas(idRenderImg);
-        const text = await new fabric.Textbox('MIAMI', {
-            originX: 'left',
-            originY: 'top',
-            fill: 'red',
-            fontSize: 15,
-        });
+        const text = await new fabric.Rect();
 
         await fabric.Image.fromURL(URL.createObjectURL(elem.files[0]),async (img) => {
 	            img.clipTo = async (ctx) => {

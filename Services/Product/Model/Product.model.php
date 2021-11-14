@@ -4,9 +4,9 @@ class AddProductRequestModel
     public string $Username;
     public string $Password;
     public string $ProductName;
-    public array $ProductPicture;
-    public array $ProductRelated;
-    public array $ProductPrice;
+    public array $ProductPicture = [];
+    public array $ProductRelated = [];
+    public array $ProductPrice = [];
 
     public function arrayPushProductPictureList() : int
     {
@@ -65,5 +65,19 @@ class AddProductResponseModel
 {
     public int $Status = 0;
     public String $MessageDesc;
+}
+
+class GetProductsForDataTableRequestModel
+{
+
+}
+class GetProductsForDataTableResponseModel
+{
+    public array $Datas = [];
+    public int $RecordsTotal = 0;
+    public int $RecordsFiltered = 0;
+    public int $Draw = 0;
+    public string $MessageDesc;
+    public int $Status = 0;
 }
 ?>
