@@ -123,9 +123,11 @@ async function saveProduct() {
         });
 
         await elemUnitType.forEach(async (elem, key) => {
+            const costPrice = await elemCostPrice[key].value.replace(/,/g,'');
+            const salePrice = await elemSalePrice[key].value.replace(/,/g,'');
             createFormDatas.append(`UnitType[${key}]`, elemUnitType[key].value);
-            createFormDatas.append(`CostPrice[${key}]`, elemCostPrice[key].value);
-            createFormDatas.append(`SalePrice[${key}]`, elemSalePrice[key].value);
+            createFormDatas.append(`CostPrice[${key}]`, costPrice);
+            createFormDatas.append(`SalePrice[${key}]`, salePrice);
             createFormDatas.append(`IdBarcode[${key}]`, elemIdBarcode[key].value);
         });
 

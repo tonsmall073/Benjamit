@@ -133,7 +133,7 @@ class ProductService
 
         $this->_context->commit();
         $modelRes->Status = 200;
-        $modelRes->MessageDesc = "ข้อมูลสินค้า $modelReq->ProductName ได้ถูกบันทึกแล้วครับ";
+        $modelRes->MessageDesc = "Success";
         
         return $modelRes;
     }
@@ -274,6 +274,282 @@ class ProductService
         {
             echo $e->getMessage();
             return 'err';
+        }
+    }
+
+    public function createDatasProduct(object $modelReq,object $modelRes) : object
+    {
+
+        $serviceConcat = new ConcatSqlService();
+
+        $sqlOrderBy = $serviceConcat->sqlOrderBy($modelReq->ColumnName,$modelReq->OrderDir);
+        $sqlLimit = $serviceConcat->sqlLimit($modelReq->StartLimit,$modelReq->LengthLimit);
+
+        $resBarcodeSearch = $this->getIdProductNameSearchIdBarcode($modelReq->SearchValue);
+
+        if($resBarcodeSearch == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getIdProductNameSearchIdBarcode Error';
+            return $modelRes;
+        }
+
+        $resPro = $this->getAllProduct($modelReq->SearchValue,$sqlOrderBy,$sqlLimit,$resBarcodeSearch);
+
+        if($resPro == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getAllProduct Error';
+            return $modelRes;
+        }
+        
+        $resProPrice = [];
+        if(!empty($resPro))
+        {
+            $resProPrice = $this->getAllProductPriceDetailForMapPriceResponse($resPro);
+            if($resProPrice == 'err')
+            {
+                $modelRes->Status = 500;
+                $modelRes->MessageDesc = 'Method getAllProductPriceDetailForMapPriceResponse Error';
+                return $modelRes;
+            }
+        }
+
+        $resMap = $this->mapDatasProductResponse($modelRes,$resPro,$resProPrice);
+
+        if($resMap == false)
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method mapDatasProduct Error';
+            return $modelRes;
+        }
+
+        $resRowFull = $this->getFullRowProduct($modelReq->SearchValue,$resBarcodeSearch);
+
+        if($resRowFull == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getFullRowProduct Error';
+            return $modelRes;
+        }
+
+        $modelRes->RecordsTotal = $resRowFull;
+        $modelRes->RecordsFiltered = $resRowFull;
+        $modelRes->Draw = $modelReq->Draw;
+        $modelRes->Status = 200;
+        $modelRes->MessageDesc = 'Success';
+        return $modelRes;
+    }
+
+    private function getAllProduct(
+        string $valSearch = null,
+        string $valOrderBy = null,
+        string $valLimit = null,
+        string $valIdProductName = null
+        ) : array|string
+    {
+        try
+        {
+            $sqlOrderByStr = !empty($valOrderBy) ?
+            $valOrderBy : "";
+
+            $sqlLimitStr = !empty($valLimit) ?
+            $valLimit : "";
+
+            $sqlWhereIdPro = !empty($valIdProductName) ?
+            " AND ProductName.Id = '$valIdProductName' " : "";
+
+            if($sqlWhereIdPro != '') $valSearch = '';
+
+            $sqlStr = "SELECT ProductName.Id,
+            ProductName.`Name`,
+            ProductName.ActiveStatus,
+            ProductName.SaveDate,
+            Member.UserId
+            FROM ProductName
+            LEFT JOIN Member ON (ProductName.IdMemberSave = Member.Id)
+            WHERE (
+                ProductName.Id LIKE '%$valSearch%' OR 
+                ProductName.`Name` LIKE '%$valSearch%' OR 
+                ProductName.SaveDate LIKE '%$valSearch%' OR  
+                Member.UserId LIKE '%$valSearch%'
+            )
+            $sqlWhereIdPro 
+            $sqlOrderByStr 
+            $sqlLimitStr 
+            ";
+
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getFullRowProduct(string $valSearch = null,string $valIdProductName = null) : int|string
+    {
+        try
+        {
+            $sqlWhereIdPro = !empty($valIdProductName) ?
+            " AND ProductName.Id = '$valIdProductName' " : "";
+
+            if($sqlWhereIdPro != '') $valSearch = '';
+
+            $sqlStr = "SELECT COUNT(ProductName.Id) AS RowFull 
+            FROM ProductName
+            LEFT JOIN Member ON (ProductName.IdMemberSave = Member.Id)
+            WHERE (
+                ProductName.Id LIKE '%$valSearch%' OR 
+                ProductName.`Name` LIKE '%$valSearch%' OR 
+                ProductName.SaveDate LIKE '%$valSearch%' OR  
+                Member.UserId LIKE '%$valSearch%'
+            ) $sqlWhereIdPro ";
+
+            $res = $this->_context->query($sqlStr)->fetch(2);
+            return $res['RowFull'];
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getAllProductPriceDetailForMapPriceResponse($params) : array|string
+    {
+        try
+        {
+            $multiVals = [];
+            foreach($params as $datas)
+            {
+                array_push($multiVals,$datas['Id']);
+            }
+            $sqlIn = implode(',',$multiVals);
+            $sqlStr = "SELECT UnitType.UnitName,
+            ProductPrice.CostPrice,
+            ProductPrice.SalePrice,
+            ProductPrice.IdBarcode,
+            ProductPrice.IdProductName
+            FROM ProductPrice
+            LEFT JOIN UnitType ON (ProductPrice.IdUnitType = UnitType.Id)
+            WHERE ProductPrice.IdProductName IN ($sqlIn)
+            ";
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+            $mapRes = [];
+            foreach($res as $datas)
+            {
+                if(array_key_exists($datas['IdProductName'], $mapRes) == false)
+                $mapRes[$datas['IdProductName']] = [];
+
+                array_push($mapRes[$datas['IdProductName']],
+                    array(
+                        'UnitName' => $datas['UnitName'],
+                        'CostPrice' => $datas['CostPrice'],
+                        'SalePrice' => $datas['SalePrice'],
+                        'IdBarcode' =>$datas['IdBarcode']
+                    )
+                );
+            }
+            return $mapRes;
+            
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getIdProductNameSearchIdBarcode(string $valIdBarcode) : int|string
+    {
+        try
+        {
+            $sqlStr = "SELECT IdProductName FROM ProductPrice WHERE IdBarcode != '' AND IdBarcode = '$valIdBarcode' ";
+            $res = $this->_context->query($sqlStr)->fetch(2);
+            // print_r($sqlStr);
+            // exit();
+            return !empty($res['IdProductName']) ? $res['IdProductName'] : '';
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function mapDatasProductResponse(object $modelRes,array $params,array $paramsPrice) : bool
+    {
+        try
+        {
+            foreach($params as $datas)
+            {
+                $row = $modelRes->arrayPushDatasList();
+                $modelRes->Datas[$row]->Id = $datas['Id'];
+                $modelRes->Datas[$row]->Name = $datas['Name'];
+                $modelRes->Datas[$row]->Username = $datas['UserId'];
+                $modelRes->Datas[$row]->ActiveStatus = $datas['ActiveStatus'];
+                $modelRes->Datas[$row]->SaveDate = $datas['SaveDate'];
+
+                foreach($paramsPrice[$datas['Id']] as $datasSub)
+                {
+                    $rowSub = $modelRes->Datas[$row]->arrayPushPriceList();
+                    $modelRes->Datas[$row]->Price[$rowSub]->UnitName = $datasSub['UnitName'];
+                    $modelRes->Datas[$row]->Price[$rowSub]->SalePrice = $datasSub['SalePrice'];
+                    $modelRes->Datas[$row]->Price[$rowSub]->IdBarcode = $datasSub['IdBarcode'];
+                }
+            }
+            return true;
+        }
+        catch(Exception $e)
+        {
+            return false;
+        }
+    }
+
+    public function createUpdateActiveStatusProduct(object $modelReq,object $modelRes) : object
+    {
+        $memRes = SecuritySystemService::checkUser($this->_context,$modelReq->Username,$modelReq->Password,'1');
+
+        if($memRes == false)
+        {
+            $modelRes->Status = 401;
+            $modelRes->MessageDesc = 'ชื่อผู้ใช้งานและรหัสผ่านไม่ถูกต้อง หรือ สิทธ์ผู้ใช้งาน ไม่รับอนุณาต';
+            return $modelRes;
+        }
+
+        $res = $this->updateProductName($modelReq->IdProductName,$modelReq->ActiveStatus);
+
+        if($res != true)
+        {
+            $modelRes->MessageDesc = "อัพเดทสถานะใช้งานล้มเหลว!";
+            $modelRes->Status = 400;
+            return $modelRes;
+        }
+
+        $modelRes->MessageDesc = 'Success';
+        $modelRes->Status = 200;
+        return $modelRes;
+    }
+
+    private function updateProductName(int $valId,int $valStatus,string $valText = null) : bool
+    {
+        try
+        {
+            $arrayList = [];
+            $updateFilter = null;
+            
+
+            if(!empty($valText)) 
+            {
+                $arrayList['TextName'] = $valText;
+                $updateFilter = ",`Name` = :TextName ";
+            }
+
+            $sqlStr = "UPDATE ProductName SET ActiveStatus = $valStatus $updateFilter WHERE Id = $valId";
+            return $this->_context->prepare($sqlStr)->execute($arrayList);
+        }
+        catch(Exception $e)
+        {
+            return false;
         }
     }
 }

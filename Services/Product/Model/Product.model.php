@@ -64,12 +64,18 @@ class ProductPriceListRequest
 class AddProductResponseModel
 {
     public int $Status = 0;
-    public String $MessageDesc;
+    public string $MessageDesc;
 }
 
 class GetProductsForDataTableRequestModel
 {
-
+    public int $Draw = 0;
+    public int $OrderColumn = 0;
+    public string $OrderDir;
+    public int $StartLimit = 0;
+    public int $LengthLimit = 0;
+    public string $ColumnName;
+    public string $SearchValue;
 }
 class GetProductsForDataTableResponseModel
 {
@@ -79,5 +85,50 @@ class GetProductsForDataTableResponseModel
     public int $Draw = 0;
     public string $MessageDesc;
     public int $Status = 0;
+
+    public function arrayPushDatasList()
+    {
+        $count = array_push($this->Datas,new DatasListForDataTableResponse());
+        $row = (int) $count - (int) 1;
+        return $row;
+    }
+}
+
+class DatasListForDataTableResponse
+{
+    public string $Id;
+    public string $Name;
+    public array $Price = [];
+    public int $ActiveStatus = 0;
+    public string $SaveDate;
+    public string $Username;
+
+    public function arrayPushPriceList()
+    {
+        $count = array_push($this->Price,new PriceListForDataTableResponse());
+        $row = (int) $count - (int) 1;
+        return $row;
+    }
+}
+
+class PriceListForDataTableResponse
+{
+    public float $SalePrice;
+    public string $UnitName;
+    public string $IdBarcode;
+}
+
+class switchActiveStatusProductRequestModel
+{
+    public string $Username;
+    public string $Password;
+    public int $IdProductName;
+    public int $ActiveStatus;
+}
+
+class switchActiveStatusProductResponseModel
+{
+    public string $MessageDesc;
+    public int $Status;
 }
 ?>

@@ -5,25 +5,32 @@ require('Login.vendor.php');
 
 $_context = new ConnectDatabases(true);
 
-if($_POST['Controller'] == 'CheckLogin')
+if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    $modelReq = new LoginRequestModel();
-    $modelReq->Username = $_POST['Username'];
-    $modelReq->Password = $_POST['Password'];
-    $modelRes = new LoginResponseModel();
-    $service = new LoginService($_context->dbBenjamit());
-    $res = $service->createDatas($modelReq,$modelRes);
-    if($res->Status == 200)
+    if($_POST['Controller'] == 'CheckLogin')
     {
-        $_SESSION['Username'] = $res->Content->User;
-        $_SESSION['Password'] = $res->Content->Pass;
-        $_SESSION['FullName'] = $res->Content->FullName;
-        $_SESSION['NickName'] = $res->Content->NickName;
+        $modelReq = new LoginRequestModel();
+        $modelReq->Username = $_POST['Username'];
+        $modelReq->Password = $_POST['Password'];
+        $modelRes = new LoginResponseModel();
+        $service = new LoginService($_context->dbBenjamit());
+        $res = $service->createDatas($modelReq,$modelRes);
+        if($res->Status == 200)
+        {
+            $_SESSION['Username'] = $res->Content->User;
+            $_SESSION['Password'] = $res->Content->Pass;
+            $_SESSION['FullName'] = $res->Content->FullName;
+            $_SESSION['NickName'] = $res->Content->NickName;
+        }
+        else
+        {
+            session_destroy();
+        }
+        echo json_encode($res);
     }
-    else
-    {
-        session_destroy();
-    }
-    echo json_encode($res);
+}
+else
+{
+    echo 'Unknown method!';
 }
 ?>

@@ -67,7 +67,7 @@
                     $modelRes->Datas[$row]->ActiveStatus = $datas['ActiveStatus'];
                     $modelRes->Datas[$row]->UserRights = $datas['IdUserRights'];
                 }
-                return 'success';
+                return 'Success';
             }
             catch(Exception $e)
             {

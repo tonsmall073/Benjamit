@@ -69,11 +69,10 @@ async function showProductTablePattern() {
                     <tr>
                         <th>รหัส</th>
                         <th>ชื่อสินค้า</th>
-                        <th>ราคาสินค้า</th>
-                        <th>Id Baecode</th>
+                        <th>ราคาขายสินค้า</th>
                         <th>สถานะใช้งาน</th>
-                        <th>วันที่บันทึก</th>
-                        <th>ผู้บันทึก</th>
+                        <th>วันที่บันทึกล่าสุด</th>
+                        <th>ผู้บันทึกล่าสุด</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,12 +91,38 @@ async function showProductTablePattern() {
                 },
                 "dataFilter": (datas) => {
                     const json = jQuery.parseJSON(datas);
+                    //let map = [];
+                    json.Datas.forEach((obj) => {
+                        let strSub = ``;
+                        obj.Price.forEach((objSub) => {
+                            strSub += `<div class='row py-1 mt-1 mx-2 border border-secondary'>
+                                <div class='col-lg-6 text-left'>${objSub.UnitName}</div>
+                                <div class='col-lg-6 text-right'>${objSub.SalePrice} บ.</div>
+                            </div>`;
+                        });
+                        obj.Price = strSub;
+                        //map.push(obj);
+                    });
                     json.data = json.Datas;
                     json.recordsTotal = json.RecordsTotal;
                     json.recordsFiltered = json.RecordsFiltered;
                     json.draw = json.Draw;
                     return JSON.stringify(json);
                 }
+            },
+            "createdRow": function ( row, data, index ) {
+                let chkAttr = '';
+
+                if(data.ActiveStatus == 0) chkAttr = 'checked';
+
+                $('td', row).eq(3).html(`
+                    <div class='row px-2'> 
+                        <div class="custom-control custom-switch col-sm-12" style='zoom:140%;'>
+                            <input type="checkbox" class="custom-control-input"id="switchActive${index}" ${chkAttr} 
+                            onchange="switchActiveStatusProduct(this,'${data.Id}','${data.Name}');" >
+                            <label class="custom-control-label" for="switchActive${index}" >ON</label>
+                        </div>
+                    </div>`);
             },
             "columns": [{
                     "data": 'Id',
@@ -112,16 +137,11 @@ async function showProductTablePattern() {
                 {
                     "data": 'Price',
                     "name": 'ProductPrice.SalePrice',
-                    "orderable": true
+                    "orderable": false
                 },
                 {
-                    "data": 'IdBarcode',
-                    "name": 'ProductPrice.IdBarcode',
-                    "orderable": true
-                },
-                {
-                    "data": 'StatusActive',
-                    "name": 'ProductName.StatusActive',
+                    "data": 'ActiveStatus',
+                    "name": 'ProductName.ActiveStatus',
                     "orderable": true
                 },
                 {
@@ -149,6 +169,47 @@ async function showProductTablePattern() {
 }
 async function showProductBoxPattern() {
 
+}
+
+async function switchActiveStatusProduct(elem,idProductNumber,textProduct = null)
+{
+    try
+    {
+        let activeStatus = 0;
+        const proStr = textProduct != null ? `สินค้าชื่อ : ${textProduct}\n` : "";
+        if(elem.checked == false) activeStatus = 1;
+
+        const res = await asyncSendPostApi('Services/Product/Product.controller.php',{
+            "Controller":'SwitchActiveStatus',
+            "Username":_Username,
+            "Password":_Password,
+            "IdProductName":idProductNumber,
+            "ActiveStatus":activeStatus
+        });
+
+        if(res.Status != 200)
+        {
+            alert(res.MessageDesc);
+            if(elem.checked == false) elem.checked = true;
+            else elem.checked = false;
+            return false;
+        }
+
+        await Swal.fire({
+            "icon": 'success',
+            "text": `${proStr}ทำการเปลียนสถานะใช้งานเรียบร้อยแล้วครับ!`,
+            "showConfirmButton": true,
+            "confirmButtonText": 'OK',
+            "confirmButtonColor": '#34a853',
+            "timer": 5000
+        });
+
+        return true;
+    }
+    catch(err)
+    {
+        return false;
+    }
 }
 
 asyncAddPressActionClickMulti('#productModalButton', 13, '#productModal');
