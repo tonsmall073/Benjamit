@@ -25,7 +25,7 @@ class ProductService
 
         $this->_context->beginTransaction();
         
-        $resLastIdProName = $this->insertProductName($modelReq->ProductName,$memRes->Id);
+        $resLastIdProName = $this->insertProductName($modelReq->ProductName,$modelReq->DetailAboutProduct,$memRes->Id);
         if($resLastIdProName == false)
         {
             $this->_context->rollBack();
@@ -143,12 +143,12 @@ class ProductService
         return (object) ['datas' => 0];
     }
 
-    private function insertProductName(string $valName,int $idMember) : int|bool
+    private function insertProductName(string $valName,string $valDetail,int $idMember) : int|bool
     {
         try
         {
-            $sqlStr = "INSERT INTO ProductName (`Name`,`IdMemberSave`,`SaveDate`) VALUES (?,?,NOW())";
-            $this->_context->prepare($sqlStr)->execute([$valName,$idMember]);
+            $sqlStr = "INSERT INTO ProductName (`Name`,`DetailAboutProduct`,`IdMemberSave`,`SaveDate`) VALUES (?,?,?,NOW())";
+            $this->_context->prepare($sqlStr)->execute([$valName,$valDetail,$idMember]);
             return $this->_context->lastInsertId();
         }
         catch(Exception $e)
@@ -304,18 +304,27 @@ class ProductService
         }
         
         $resProPrice = [];
+        $resProImg = [];
         if(!empty($resPro))
         {
-            $resProPrice = $this->getAllProductPriceDetailForMapPriceResponse($resPro);
+            $resProPrice = $this->getAllProductPriceDetailForMapPricesResponse($resPro);
             if($resProPrice == 'err')
             {
                 $modelRes->Status = 500;
                 $modelRes->MessageDesc = 'Method getAllProductPriceDetailForMapPriceResponse Error';
                 return $modelRes;
             }
+
+            $resProImg = $this->getAllProductPictureForMapImages($resPro);
+            if($resProImg == 'err')
+            {
+                $modelRes->Status = 500;
+                $modelRes->MessageDesc = 'Method getAllProductPictureForMapImages Error';
+                return $modelRes;
+            }
         }
 
-        $resMap = $this->mapDatasProductResponse($modelRes,$resPro,$resProPrice);
+        $resMap = $this->mapDatasProductResponse($modelRes,$resPro,$resProPrice,$resProImg);
 
         if($resMap == false)
         {
@@ -416,7 +425,7 @@ class ProductService
         }
     }
 
-    private function getAllProductPriceDetailForMapPriceResponse($params) : array|string
+    private function getAllProductPriceDetailForMapPricesResponse($params) : array|string
     {
         try
         {
@@ -460,6 +469,41 @@ class ProductService
         }
     }
 
+    private function getAllProductPictureForMapImages(array $params) : array|string
+    {
+        try
+        {
+            $multiVals = [];
+            
+            foreach($params as $datas)
+            {
+                array_push($multiVals,$datas['Id']);
+            }
+            $sqlIn = implode(',',$multiVals);
+
+            $sqlStr = "SELECT IdProductName,ImageFile FROM ProductPicture WHERE IdProductName IN ($sqlIn)";
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+
+            $mapRes = [];
+            foreach($res as $datas)
+            {
+                if(array_key_exists($datas['IdProductName'], $mapRes) == false)
+                $mapRes[$datas['IdProductName']] = [];
+
+                array_push($mapRes[$datas['IdProductName']],
+                    array(
+                        'ImageFile' => $datas['ImageFile']
+                    )
+                );
+            }
+            return $mapRes;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
     private function getIdProductNameSearchIdBarcode(string $valIdBarcode) : int|string
     {
         try
@@ -476,7 +520,7 @@ class ProductService
         }
     }
 
-    private function mapDatasProductResponse(object $modelRes,array $params,array $paramsPrice) : bool
+    private function mapDatasProductResponse(object $modelRes,array $params,array $paramsPrice,array $paramsImg) : bool
     {
         try
         {
@@ -489,12 +533,24 @@ class ProductService
                 $modelRes->Datas[$row]->ActiveStatus = $datas['ActiveStatus'];
                 $modelRes->Datas[$row]->SaveDate = $datas['SaveDate'];
 
-                foreach($paramsPrice[$datas['Id']] as $datasSub)
+                if(!empty($paramsPrice[$datas['Id']]))
                 {
-                    $rowSub = $modelRes->Datas[$row]->arrayPushPriceList();
-                    $modelRes->Datas[$row]->Price[$rowSub]->UnitName = $datasSub['UnitName'];
-                    $modelRes->Datas[$row]->Price[$rowSub]->SalePrice = $datasSub['SalePrice'];
-                    $modelRes->Datas[$row]->Price[$rowSub]->IdBarcode = $datasSub['IdBarcode'];
+                    foreach($paramsPrice[$datas['Id']] as $datasSub)
+                    {
+                        $rowSub = $modelRes->Datas[$row]->arrayPushPricesList();
+                        $modelRes->Datas[$row]->Prices[$rowSub]->UnitName = $datasSub['UnitName'];
+                        $modelRes->Datas[$row]->Prices[$rowSub]->SalePrice = $datasSub['SalePrice'];
+                        $modelRes->Datas[$row]->Prices[$rowSub]->IdBarcode = $datasSub['IdBarcode'];
+                    }
+                }
+
+                if(!empty($paramsImg[$datas['Id']]))
+                {
+                    foreach($paramsImg[$datas['Id']] as $datasSub)
+                    {
+                        $rowSub = $modelRes->Datas[$row]->arrayPushImagesList();
+                        $modelRes->Datas[$row]->Images[$rowSub]->FileName = $datasSub['ImageFile'];
+                    }
                 }
             }
             return true;
@@ -516,7 +572,7 @@ class ProductService
             return $modelRes;
         }
 
-        $res = $this->updateProductName($modelReq->IdProductName,$modelReq->ActiveStatus);
+        $res = $this->updateProductName($modelReq->IdProductName,$modelReq->ActiveStatus,$memRes->Id);
 
         if($res != true)
         {
@@ -530,7 +586,7 @@ class ProductService
         return $modelRes;
     }
 
-    private function updateProductName(int $valId,int $valStatus,string $valText = null) : bool
+    private function updateProductName(int $valId,int $valStatus,$valIdMember,string $valText = null) : bool
     {
         try
         {
@@ -544,7 +600,12 @@ class ProductService
                 $updateFilter = ",`Name` = :TextName ";
             }
 
-            $sqlStr = "UPDATE ProductName SET ActiveStatus = $valStatus $updateFilter WHERE Id = $valId";
+            $arrayList['IdMemberSave'] = $valIdMember;
+
+            $sqlStr = "UPDATE ProductName SET ActiveStatus = $valStatus 
+            $updateFilter,
+            IdMemberSave = :IdMemberSave,SaveDate = NOW() 
+            WHERE Id = $valId";
             return $this->_context->prepare($sqlStr)->execute($arrayList);
         }
         catch(Exception $e)

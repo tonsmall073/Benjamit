@@ -4,6 +4,7 @@ async function saveProduct() {
         let elemAlert = null;
 
         const elemProductName = document.getElementsByName('ProductName');
+        const elemDetailAboutProduct = document.getElementsByName('DetailAboutProduct');
         const elemRowProductRelated = document.getElementsByName('RowProductRelatedName[]');
         const elemProductRelated = document.getElementsByName('ProductRelatedName[]');
         const elemRowSaleDetail = document.getElementsByName('RowSaleDetail[]');
@@ -25,6 +26,12 @@ async function saveProduct() {
                     chkSwal2Alerted = 1;
                     break;
                 }
+            }
+        }
+        if (chkSwal2Alerted == 0) {
+            if (elemDetailAboutProduct[0].value == 0) {
+                elemAlert = elemDetailAboutProduct[0];
+                chkSwal2Alerted = 1;
             }
         }
         if (chkSwal2Alerted == 0) {
@@ -117,6 +124,7 @@ async function saveProduct() {
         createFormDatas.append("Username", _Username);
         createFormDatas.append("Password", _Password);
         createFormDatas.append("ProductName", elemProductName[0].value);
+        createFormDatas.append("DetailAboutProduct", elemDetailAboutProduct[0].value);
 
         await elemProductRelated.forEach(async (elem, key) => {
             createFormDatas.append(`ProductRelatedName[${key}]`, elem.value);

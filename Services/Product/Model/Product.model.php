@@ -4,6 +4,7 @@ class AddProductRequestModel
     public string $Username;
     public string $Password;
     public string $ProductName;
+    public string $DetailAboutProduct;
     public array $ProductPicture = [];
     public array $ProductRelated = [];
     public array $ProductPrice = [];
@@ -67,7 +68,7 @@ class AddProductResponseModel
     public string $MessageDesc;
 }
 
-class GetProductsForDataTableRequestModel
+class GetProductsRequestModel
 {
     public int $Draw = 0;
     public int $OrderColumn = 0;
@@ -77,7 +78,7 @@ class GetProductsForDataTableRequestModel
     public string $ColumnName;
     public string $SearchValue;
 }
-class GetProductsForDataTableResponseModel
+class GetProductsResponseModel
 {
     public array $Datas = [];
     public int $RecordsTotal = 0;
@@ -88,34 +89,48 @@ class GetProductsForDataTableResponseModel
 
     public function arrayPushDatasList()
     {
-        $count = array_push($this->Datas,new DatasListForDataTableResponse());
+        $count = array_push($this->Datas,new DatasListResponse());
         $row = (int) $count - (int) 1;
         return $row;
     }
 }
 
-class DatasListForDataTableResponse
+class DatasListResponse
 {
     public string $Id;
     public string $Name;
-    public array $Price = [];
+    public array $Prices = [];
+    public array $Images = [];
     public int $ActiveStatus = 0;
     public string $SaveDate;
     public string $Username;
+    
 
-    public function arrayPushPriceList()
+    public function arrayPushPricesList()
     {
-        $count = array_push($this->Price,new PriceListForDataTableResponse());
+        $count = array_push($this->Prices,new PricesListResponse());
+        $row = (int) $count - (int) 1;
+        return $row;
+    }
+
+    public function arrayPushImagesList()
+    {
+        $count = array_push($this->Images,new ImagesListResponse());
         $row = (int) $count - (int) 1;
         return $row;
     }
 }
 
-class PriceListForDataTableResponse
+class PricesListResponse
 {
     public float $SalePrice;
     public string $UnitName;
     public string $IdBarcode;
+}
+
+class ImagesListResponse
+{
+    public string $FileName;
 }
 
 class switchActiveStatusProductRequestModel

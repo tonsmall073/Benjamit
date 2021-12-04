@@ -439,6 +439,7 @@ echo "
         <script src="js/IMask/V6.2.2/imask.js"></script>
 
         <script src="vendor/Selectize/V0.13.3/js/standalone/selectize.js" ></script>
+        <script src="js/Pagination.js"></script>
         <script src="js/main.js"></script>
 
     </body>

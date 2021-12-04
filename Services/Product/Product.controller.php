@@ -10,6 +10,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         $modelReq->Username = $_POST['Username'];
         $modelReq->Password = $_POST['Password'];
         $modelReq->ProductName = $_POST['ProductName'];
+        $modelReq->DetailAboutProduct = $_POST['DetailAboutProduct'];
 
         if(isset($_POST['ProductPicture']))
         {
@@ -20,7 +21,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
             }
         }
 
-        if(isset($_POST['ProductPicture']))
+        if(isset($_POST['ProductRelatedName']))
         {
             foreach($_POST['ProductRelatedName'] as $value)
             {
@@ -56,7 +57,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
     if($_POST['Controller'] == 'GetProductsForDataTable')
     {
-        $modelReq = new GetProductsForDataTableRequestModel();
+        $modelReq = new GetProductsRequestModel();
         $modelReq->Draw = $_POST['draw'];
         $modelReq->OrderColumn = $_POST['order'][0]['column'];
         $modelReq->OrderDir = $_POST['order'][0]['dir'];
@@ -65,7 +66,25 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         $modelReq->ColumnName = $_POST['columns'][$modelReq->OrderColumn]['name'];
         $modelReq->SearchValue = $_POST['search']['value'];
         
-        $modelRes = new GetProductsForDataTableResponseModel();
+        $modelRes = new GetProductsResponseModel();
+
+        $service = new ProductService($_context->dbBenjamit());
+        $res = $service->createDatasProduct($modelReq,$modelRes);
+
+        echo json_encode($res);
+    }
+    if($_POST['Controller'] == 'GetProducts')
+    {
+        $modelReq = new GetProductsRequestModel();
+        $modelReq->Draw = 0;
+        $modelReq->OrderColumn = 0;
+        $modelReq->OrderDir = '';
+        $modelReq->StartLimit = $_POST['Start'];
+        $modelReq->LengthLimit = $_POST['Length'];
+        $modelReq->ColumnName = '';
+        $modelReq->SearchValue = $_POST['SearchValue'];
+        
+        $modelRes = new GetProductsResponseModel();
 
         $service = new ProductService($_context->dbBenjamit());
         $res = $service->createDatasProduct($modelReq,$modelRes);

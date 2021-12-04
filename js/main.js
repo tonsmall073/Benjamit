@@ -204,6 +204,7 @@ async function asyncfabricAddPutImg(elem,idRenderImg)
     }
 }
 
+//สำหรับเอาไปตั้งค่า Input lib IMask เป็นจำนวนเงินทีมีลูกนํ้าและทศนิยม
 async function asyncIMaskSetOptionNumberAddComma(decimals = 0,minNum = 0,maxNum = 0)
 {
     return {
@@ -221,5 +222,67 @@ async function asyncIMaskSetOptionNumberAddComma(decimals = 0,minNum = 0,maxNum 
         // additional number interval options (e.g.)
         min: minNum,
         max: maxNum
+    }
+}
+
+function addCommas(valNumber,valdecimals = null)
+{
+    try
+    {
+        const rgxNumberOnly = /^[0-9\.]*$/;
+        const nStr = valdecimals == null ? new String(valNumber) : new String(valNumber.toFixed(valdecimals));
+        
+        if(nStr.search(rgxNumberOnly)) throw "ค่าพารามิเตอร์เลขจำนวนที่ได้รับต้องเป็นตัวเลขเท่านั้น ประเภท int หรือ float";
+
+        const rgxUseAddCommas = /(\d+)(\d{3})/;
+        const x = nStr.split('.');
+
+        if(x.length > 2) throw "ค่าพารามิเตอร์ที่ได้รับไม่ตรงรูปแบบ";
+
+        const number = new String(x[0]);
+        const decimal = x.length > 1 ? new String(x[1]) : '';
+
+
+        let createStr = number;
+        while (rgxUseAddCommas.test(createStr)) {
+            createStr = createStr.replace(rgxUseAddCommas, '$1' + ',' + '$2');
+        }
+        
+        return createStr + (decimal != '' ? `.${decimal}` : '');
+    }
+    catch(err)
+    {
+        return `Function asyncAddCommas Error : ${err}`;
+    }
+}
+
+async function asyncAddCommas(valNumber,valdecimals = null)
+{
+    try
+    {
+        const rgxNumberOnly = /^[0-9\.]*$/;
+        const nStr = valdecimals == null ? new String(valNumber) : new String(valNumber.toFixed(valdecimals));
+        
+        if(nStr.search(rgxNumberOnly)) throw "ค่าพารามิเตอร์เลขจำนวนที่ได้รับต้องเป็นตัวเลขเท่านั้น ประเภท int หรือ float";
+
+        const rgxUseAddCommas = /(\d+)(\d{3})/;
+        const x = nStr.split('.');
+
+        if(x.length > 2) throw "ค่าพารามิเตอร์ที่ได้รับไม่ตรงรูปแบบ";
+
+        const number = new String(x[0]);
+        const decimal = x.length > 1 ? new String(x[1]) : '';
+
+
+        let createStr = number;
+        while (rgxUseAddCommas.test(createStr)) {
+            createStr = createStr.replace(rgxUseAddCommas, '$1' + ',' + '$2');
+        }
+        
+        return createStr + (decimal != '' ? `.${decimal}` : '');
+    }
+    catch(err)
+    {
+        return `Function asyncAddCommas Error : ${err}`;
     }
 }

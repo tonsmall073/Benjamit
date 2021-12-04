@@ -14,6 +14,16 @@
             <button class="btn btn-sm btn-primary" onclick="addProductRelatedName();"><i class="bi bi-plus"></i> เพิ่มศัพท์สินค้า</button>
         </div>
     </div>
+    <div class="row form-group">
+        <div class="col-sm-12">
+            <label>รายละเอียดตัวสินค้า</label>
+        </div>
+        <div class="col-sm-12">
+            <textarea type="text" class="form-control" name="DetailAboutProduct" 
+            rows="5" placeholder="รายละเอียดตัวสินค้า ไม่อธิบายใส่เครื่องหมาย (-)" 
+            title="กรุณาป้อนข้อมูลรายละเอียดตัวสินค้าด้วยครับ"></textarea>
+        </div>
+    </div>
     <div class="col-sm-12 py-2" id="productRelate">
 
     </div>
