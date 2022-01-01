@@ -21,8 +21,7 @@
     </div>
 </div>
 
-<!-- modal -->
-
+<!-- modal Add Product And Edit Product-->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" data-backdrop="static"
     data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl">
@@ -44,7 +43,30 @@
     </div>
 </div>
 <!--End model -->
+
+<!-- modal Add Product And Edit Product-->
+<div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel"
+    data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productDetailModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="productDetailModalBody">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End model -->
 <script src='Assets/JavaScripts/Products/AddProduct.js'></script>
+<script src='Assets/JavaScripts/Products/DetailProduct.js'></script>
 <script>
 async function openAddProductFormModal() {
     try {
@@ -94,7 +116,7 @@ async function showProductTablePattern() {
                     const json = jQuery.parseJSON(datas);
                     //let map = [];
                     json.Datas.forEach((obj) => {
-                        obj.ButtonEdit = `<button class='btn btn-sm btn-warning' onclick='openEditProductFormModal({${obj.Id})'>แก้ไข</button>`;
+                        obj.ButtonEdit = `<button class='btn btn-sm btn-warning' onclick='openEditProductFormModal(${obj.Id})'>แก้ไข</button>`;
                         let strSub = ``;
                         obj.Prices.forEach((objSub) => {
                             strSub += `<div class='row py-1 mt-1 mx-2 border border-secondary'>
@@ -182,49 +204,29 @@ async function showProductBoxPattern()
 {
     try
     {
-
-    
-    const element = document.querySelector('#showProducts').innerHTML = `
-    <div class='row'>
-        <div class='col-sm-12 px-4'>
-            <div class='card shadow mb-3 p-4'>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="searchProduct"><i class="bi bi-search"></i></span>
+        const element = document.querySelector('#showProducts').innerHTML = `
+        <div class='row'>
+            <div class='col-sm-12 px-4'>
+                <div class='card shadow mb-3 p-4'>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="searchProduct"><i class="bi bi-search"></i></span>
+                        </div>
+                        <input type="text" class="form-control" name="searchProduct" 
+                        placeholder="ค้นหาสินค้า" aria-label="searchProduct" onkeyup="searchAllProductBoxPattern(this.value);">
                     </div>
-                    <input type="text" class="form-control" name="searchProduct" 
-                    placeholder="ค้นหาสินค้า" aria-label="searchProduct" onkeyup="searchAllProductBoxPattern(this.value);">
                 </div>
             </div>
         </div>
-    </div>
-    <div class='col-sm-12' id='getAllProducts'>
-    </div>
-    <div class='col-sm-12' id='paginationPrduct'>
-        <nav>
-            <ul class="pagination">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">Previous</span>
-                  <span class="sr-only">Previous</span>
-                </a>
-              </li>
-              <li class="page-item active"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">Next</span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </li>
-            </ul>
-        </nav>
-    </div>`;
+        <div class='col-sm-12' id='getAllProducts'>
+        </div>
+        <div class='col-sm-12 d-flex justify-content-center' id='paginationProduct'>
 
-    await searchAllProductBoxPattern();
+        </div>`;
 
-    return true;
+        await searchAllProductBoxPattern();
+
+        return true;
     }
     catch(err)
     {
@@ -237,12 +239,38 @@ async function searchAllProductBoxPattern(valSearch = null,valStart = 0,valLimit
 {
     try
     {
-        await getAllProductBoxPattern('#getAllProducts',valSearch,valStart,valLimit);
+        const res = await getAllProductBoxPattern('#getAllProducts',valSearch,valStart,valLimit);
+        const setPagination = 
+        {
+            "AllRow" : res.RecordsTotal,
+            "FocusCol" : 1,
+            "Length" : valLimit,
+            "ColNum" : 7,
+            "FunctionActive" : 'getAllProductBoxPatternByPagination',             
+            "FunctionSraty" : 'off'
+        };
+        await asyncPagination('#paginationProduct',setPagination);
         return true;
     }
     catch(err)
     {
         alert(`Function searchAllProductBoxPattern Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function getAllProductBoxPatternByPagination(params)
+{
+    try
+    {
+        const res = JSON.parse(params);
+        const valSearch = document.getElementsByName('searchProduct')[0].value;
+        await getAllProductBoxPattern('#getAllProducts',valSearch,res.start,res.length);
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function getAllProductBoxPatternByPagination Error : ${err.message}`);
         return false;
     }
 }
@@ -284,7 +312,7 @@ async function getAllProductBoxPattern(idRender,valSearch = null,valStart,valLim
                 </div>
             `;
             element.appendChild(row);
-            return true;
+            return res;
         }
         
         
@@ -410,7 +438,7 @@ async function getAllProductBoxPattern(idRender,valSearch = null,valStart,valLim
                     <button class='btn btn-md btn-primary' onclick='openDetailProductFormModal(${datas.Id});'>ดูข้อมูลเพิ่ม</button>
                 </div>
                 <div class='col-md-6'>
-                    <button class='btn btn-md btn-warning' onclick='openEditProductFormModal({${datas.Id})'>แก้ไขข้อมูล</button>
+                    <button class='btn btn-md btn-warning' onclick='openEditProductFormModal(${datas.Id})'>แก้ไขข้อมูล</button>
                 </div>
             </div>
             `;
@@ -423,8 +451,8 @@ async function getAllProductBoxPattern(idRender,valSearch = null,valStart,valLim
         });
 
         await element.appendChild(row);
-        await $('.carousel').carousel('pause')
-        return true;
+        await $('.carousel').carousel('pause');
+        return res;
     }
     catch(err)
     {
@@ -434,13 +462,6 @@ async function getAllProductBoxPattern(idRender,valSearch = null,valStart,valLim
     const element = document.querySelector('#showProducts');
 
     const row = document.createElement
-    
-
-}
-
-async function openDetailProductFormModal(idProductNumber)
-{
-
 }
 
 async function openEditProductFormModal(idProductNumber)
@@ -485,6 +506,31 @@ async function switchActiveStatusProduct(elem,idProductNumber,textProduct = null
     }
     catch(err)
     {
+        alert(`Function switchActiveStatusProduct Error : ${err.message}`);
+        return false;
+    }
+}
+
+async function copyText(val)
+{
+    try
+    {
+        await navigator.clipboard.writeText(val);
+
+        await Swal.fire({
+            "icon": 'success',
+            "text": `คัดลอกข้อความ "${val}" เรียบร้อยแล้วครับ`,
+            "showConfirmButton": true,
+            "confirmButtonText": 'OK',
+            "confirmButtonColor": '#34a853',
+            "timer": 5000
+        });
+
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function copyText Error : ${err.message}`);
         return false;
     }
 }

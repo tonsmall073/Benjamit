@@ -123,9 +123,10 @@ class DatasListResponse
 
 class PricesListResponse
 {
-    public float $SalePrice;
+    public float $SalePrice = 0;
     public string $UnitName;
     public string $IdBarcode;
+    public float $CostPrice = 0;
 }
 
 class ImagesListResponse
@@ -133,7 +134,12 @@ class ImagesListResponse
     public string $FileName;
 }
 
-class switchActiveStatusProductRequestModel
+class RelatedProductsListResponse
+{
+    public string $Name;
+}
+
+class SwitchActiveStatusProductRequestModel
 {
     public string $Username;
     public string $Password;
@@ -141,9 +147,63 @@ class switchActiveStatusProductRequestModel
     public int $ActiveStatus;
 }
 
-class switchActiveStatusProductResponseModel
+class SwitchActiveStatusProductResponseModel
 {
     public string $MessageDesc;
-    public int $Status;
+    public int $Status = 0;
+}
+
+class GetProductDetailRequestModel
+{
+    public string $Username;
+    public string $Password;
+    public int $IdProductName;
+}
+class GetProductDetailResponseModel
+{
+    public object $Content;
+    public string $MessageDesc;
+    public int $Status = 0;
+
+    public function __construct()
+    {
+        $this->Content = new ContentListResponse();
+    }
+}
+
+class ContentListResponse
+{
+    public string $Id;
+    public string $ProductName;
+    public string $DetailAboutProduct;
+    public array $Prices = [];
+    public array $Images = [];
+    public int $ActiveStatus = 0;
+    public string $SaveDate;
+    public string $Username;
+    public string $UserSaveFullName;
+    public string $NickName;
+    public array $RelatedProducts = [];
+
+    public function arrayPushPricesList()
+    {
+        $count = array_push($this->Prices,new PricesListResponse());
+        $row = (int) $count - (int) 1;
+        return $row;
+    }
+
+    public function arrayPushImagesList()
+    {
+        $count = array_push($this->Images,new ImagesListResponse());
+        $row = (int) $count - (int) 1;
+        return $row;
+    }
+
+    public function arrayPushRelatedProductsList()
+    {
+        $count = array_push($this->RelatedProducts,new RelatedProductsListResponse());
+        $row = (int) $count - (int) 1;
+        return $row;
+    }
 }
 ?>

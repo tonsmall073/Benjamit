@@ -440,6 +440,7 @@ echo "
 
         <script src="vendor/Selectize/V0.13.3/js/standalone/selectize.js" ></script>
         <script src="js/Pagination.js"></script>
+        <script src="js/JsBarcode/V3.11.5/JsBarcode.all.js"></script>
         <script src="js/main.js"></script>
 
     </body>

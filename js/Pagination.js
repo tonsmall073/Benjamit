@@ -30,12 +30,19 @@ async function asyncPagination(idRender,setting)
       "allCol" : 0
     };
 
+    if(set.colNum < 7)
+    {
+      alert('จำนวนปุ่ม Pagination ห้ามน้อยกว่า 7');
+      return false;
+    }
+
     set.allCol = Math.ceil(getSet.AllRow / getSet.Length);
     set.start = (getSet.FocusCol - 1) * getSet.Length;
 
     const nav = document.createElement('NAV');
 
     const ul = document.createElement('UL');
+    
     ul.classList.add('pagination');
 
     const liPrevious = document.createElement('LI');
@@ -58,9 +65,14 @@ async function asyncPagination(idRender,setting)
 
     if(set.focusCol == 1) liPrevious.classList.add('disabled');
 
-    ul.appendChild(liPrevious); 
+    ul.appendChild(liPrevious);
     
-    if(set.allCol <= set.colNum)
+    if(set.allRow <= 0)
+    {
+      liPrevious.classList.add('disabled');
+      liNext.classList.add('disabled');
+    }
+    else if(set.allCol <= set.colNum)
     {
       for(let i = 1;i <= set.allCol;i++)
       {
@@ -183,7 +195,7 @@ async function asyncPagination(idRender,setting)
   }
   catch(err)
   {
-    alert(`Function paginationByTon Message Error : ${err.message}`);
+    alert(`Function asyncPagination Message Error : ${err.message}`);
     return false;
   }
 }

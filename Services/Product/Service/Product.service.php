@@ -613,5 +613,218 @@ class ProductService
             return false;
         }
     }
+
+    public function createProductDetail($modelReq,$modelRes) : object
+    {
+        $memRes = SecuritySystemService::checkUser($this->_context,$modelReq->Username,$modelReq->Password,'1');
+
+        if($memRes == false)
+        {
+            $modelRes->Status = 401;
+            $modelRes->MessageDesc = 'ชื่อผู้ใช้งานและรหัสผ่านไม่ถูกต้อง หรือ สิทธ์ผู้ใช้งาน ไม่รับอนุณาต';
+            return $modelRes;
+        }
+
+        $resProName = $this->getProductName($modelReq->IdProductName);
+        if($resProName == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getProductName Error';
+            return $modelRes;
+        }
+
+        $resMember = $this->getMember($resProName['IdMemberSave']);
+        if($resMember == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getMember Error';
+            return $modelRes;
+        }
+
+        $resAllProductPicture = $this->getAllProductPicture($modelReq->IdProductName);
+        if($resAllProductPicture == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getAllProductPicture Error';
+            return $modelRes;
+        }
+
+        $resAllRelatedProduct = $this->getAllRelatedProduct($modelReq->IdProductName);
+        if($resAllRelatedProduct == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getAllRelatedProduct Error';
+            return $modelRes;
+        }
+
+        $resAllProductPrice = $this->getAllProductPrice($modelReq->IdProductName);
+        if($resAllProductPrice == 'err')
+        {
+            $modelRes->Status = 500;
+            $modelRes->MessageDesc = 'Method getAllProductPrice Error';
+            return $modelRes;
+        }
+
+        $modelRes->Content->Id = $resProName['Id'];
+        $modelRes->Content->ProductName = $resProName['Name'];
+        $modelRes->Content->DetailAboutProduct = $resProName['DetailAboutProduct'];
+        
+        $modelRes->Content->Prices = [];
+        foreach($resAllProductPrice as $datas)
+        {
+            $row = $modelRes->Content->arrayPushPricesList();
+            $modelRes->Content->Prices[$row]->CostPrice = $datas['CostPrice'];
+            $modelRes->Content->Prices[$row]->SalePrice = $datas['SalePrice'];
+            $modelRes->Content->Prices[$row]->UnitName = $datas['UnitName'];
+            $modelRes->Content->Prices[$row]->IdBarcode = $datas['IdBarcode'];
+        }
+
+        $modelRes->Content->Images = [];
+        foreach($resAllProductPicture as $datas)
+        {
+            $row = $modelRes->Content->arrayPushImagesList();
+            $modelRes->Content->Images[$row]->FileName = $datas['ImageFile'];
+        }
+
+        $modelRes->Content->RelatedProducts = [];
+        foreach($resAllRelatedProduct as $datas)
+        {
+            $row = $modelRes->Content->arrayPushRelatedProductsList();
+            $modelRes->Content->RelatedProducts[$row]->Name = $datas['Name'];
+        }
+
+        $modelRes->Content->ActiveStatus = $resProName['ActiveStatus'];
+        $modelRes->Content->SaveDate = $resProName['SaveDate'];
+        $modelRes->Content->Username = $resMember['UserId'];
+        $modelRes->Content->UserSaveFullName = $resMember['NameTitle'].$resMember['FirstName']." ".$resMember['LastName'];
+        $modelRes->Content->NickName = $resMember['NickName'];
+        $modelRes->Status = 200;
+        $modelRes->MessageDesc = 'Success';
+
+        return $modelRes;
+    }
+    
+    private function getProductName(int $valId) : array|string
+    {
+        try
+        {
+            $sqlStr = "SELECT 
+            `Id`,
+            `Name`,
+            DetailAboutProduct,
+            ActiveStatus,
+            IdMemberSave,
+            SaveDate
+            FROM ProductName
+            WHERE id = '$valId' ";
+
+            $res = $this->_context->query($sqlStr)->fetch(2);
+
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getMember(int $valId)
+    {
+        try
+        {
+            $sqlStr = "SELECT 
+            `Member`.`Id`,
+            `Member`.`IdTitle`,
+            `Member`.`FirstName`,
+            `Member`.`LastName`,
+            `Member`.`NickName`,
+            `Member`.`BirthDate`,
+            `Member`.`UserId`,
+            `Member`.`Password`,
+            `Member`.`IdUserRights`,
+            `Member`.`ActiveStatus`,
+            `NameTitle`.`Name` AS NameTitle
+            FROM `Member` 
+            LEFT JOIN NameTitle ON (Member.IdTitle = NameTitle.Id)
+            WHERE `Member`.`Id` = '$valId' ";
+
+            $res = $this->_context->query($sqlStr)->fetch(2);
+
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getAllProductPicture(int $valIdProductName) : array|string
+    {
+        try
+        {
+            $sqlStr = "SELECT 
+            `Id`,
+            `ImageFile`,
+            `IdProductName`,
+            `ActiveStatus`
+            FROM `ProductPicture` 
+            WHERE `IdProductName` = '$valIdProductName' ";
+
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getAllRelatedProduct(int $valIdProductName) : array|string
+    {
+        try
+        {
+            $sqlStr = "SELECT `Id`,
+            `Name`,
+            `IdProductName`,
+            `ActiveStatus` 
+            FROM `ProductRelatedName` 
+            WHERE `IdProductName` = ' $valIdProductName' ";
+
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
+
+    private function getAllProductPrice(int $valIdProductName) : array|string
+    {
+        try
+        {
+            $sqlStr = "SELECT `ProductPrice`.`Id`,
+            `ProductPrice`.`CostPrice`,
+            `ProductPrice`.`SalePrice`,
+            `ProductPrice`.`IdProductName`,
+            `ProductPrice`.`IdUnitType`,
+            `ProductPrice`.`IdBarcode`,
+            `ProductPrice`.`ActiveStatus`,
+            `UnitType`.`UnitName` 
+            FROM `ProductPrice` 
+            LEFT JOIN UnitType ON (`ProductPrice`.`IdUnitType` = `UnitType`.`Id`) 
+            WHERE IdProductName = '$valIdProductName' ";
+
+            $res = $this->_context->query($sqlStr)->fetchAll(2);
+
+            return $res;
+        }
+        catch(Exception $e)
+        {
+            return 'err';
+        }
+    }
 }
 ?>

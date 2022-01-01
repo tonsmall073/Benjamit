@@ -93,18 +93,33 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
     if($_POST['Controller'] == 'SwitchActiveStatus')
     {
-        $modelReq = new switchActiveStatusProductRequestModel();
+        $modelReq = new SwitchActiveStatusProductRequestModel();
         $modelReq->Username = $_POST['Username'];
         $modelReq->Password = $_POST['Password'];
         $modelReq->IdProductName = $_POST['IdProductName'];
         $modelReq->ActiveStatus = $_POST['ActiveStatus'];
 
-        $modelRes = new switchActiveStatusProductResponseModel();
+        $modelRes = new SwitchActiveStatusProductResponseModel();
 
         $service = new ProductService($_context->dbBenjamit());
 
         $res = $service->createUpdateActiveStatusProduct($modelReq,$modelRes);
         
+        echo json_encode($res);
+    }
+    if($_POST['Controller'] == 'GetProductDetail')
+    {
+        $modelReq = new GetProductDetailRequestModel();
+        $modelReq->Username = $_POST['Username'];
+        $modelReq->Password = $_POST['Password'];
+        $modelReq->IdProductName = $_POST['IdProductName'];
+
+        $modelRes = new GetProductDetailResponseModel();
+
+        $service = new ProductService($_context->dbBenjamit());
+
+        $res = $service->createProductDetail($modelReq,$modelRes);
+
         echo json_encode($res);
     }
 }
