@@ -1,4 +1,4 @@
-<div class="container-fluid" id="formAddProduct">
+<div class="container-fluid" id="formEditProduct">
     <div class="row form-group">
         <div class="col-sm-12">
             <label>ชื่อสินค้า</label>
@@ -55,7 +55,7 @@ var _idRowProRel = 0;
 var _idRowPro = 0;
 var _idRowImg = 0;
 
-async function addProductRelatedName()
+async function addProductRelatedName(val = '')
 {
     try
     {
@@ -66,7 +66,7 @@ async function addProductRelatedName()
                     <button class="btn btn-danger" type="button" name="delProductRelatedButton[]" 
                     onclick="delProductRelated(${_idRowProRel});">ลบ</button>
                 </div>
-                <input type="text" name="ProductRelatedName[]" class="form-control" value="" 
+                <input type="text" name="ProductRelatedName[]" class="form-control" value="${val}" 
                 placeholder="ชื่อศัพท์การเรียกสินค้า" title="กรุณาคีย์ชื่อศัพท์การเรียกสินค้าด้วยครับ">
             </div>
         </div>`;
@@ -95,8 +95,14 @@ async function delProductRelated(idRow)
     }
 }
 
-async function addProductPriceDetail() {
+async function addProductPriceDetail(params = '') {
     try {
+        const unitName = params != '' ? params.UnitName : '';
+        const idUnitName = params != '' ? params.IdUnitName : 0;
+        const costPrice = params != '' ? await asyncAddCommas(params.CostPrice,2) : '';
+        const salePrice = params != '' ? await asyncAddCommas(params.SalePrice,2) : '';
+        const idBarcode = params != '' ? params.IdBarcode : 'AutoIdBarcode';
+
         const htmlStr = `
         <div class="row border-bottom-dark pb-2" id="rowSaleDetail${_idRowPro}" name='RowSaleDetail[]'>
             <div class="input-group col-lg-3">
@@ -134,16 +140,25 @@ async function addProductPriceDetail() {
         </div>`;
 
         await $('#saleProductDetail').append(htmlStr);
+        document.getElementById(`costPrice${_idRowPro}`).value = costPrice;
         await IMask(document.getElementById(`costPrice${_idRowPro}`),
         await asyncIMaskSetOptionNumberAddComma(2,0,1000000));
+
+        document.getElementById(`salePrice${_idRowPro}`).value = salePrice;
         await IMask(document.getElementById(`salePrice${_idRowPro}`),
         await asyncIMaskSetOptionNumberAddComma(2,0,1000000));
-        await getUnitTypeAllCreateHtmlOptions(`unitType${_idRowPro}`);
-        // await $(`#unitType${_idRowPro}`).selectpicker();
-        $(`#unitType${_idRowPro}`).selectize({
-  create: false,
-  sortField: "text",
-});
+
+        await getUnitTypeAllCreateHtmlOptions(`unitType${_idRowPro}`,idUnitName);
+
+        const selectize = $(`#unitType${_idRowPro}`).selectize({
+            create: false,
+            sortField: "text",
+        });
+        
+        if(idBarcode != 'AutoIdBarcode'){
+            await switchAutoGenIdBarcode(_idRowPro);
+            document.getElementById(`idBarcode${_idRowPro}`).value = idBarcode;
+        }
             
         _idRowPro++;
         return true;
@@ -154,7 +169,7 @@ async function addProductPriceDetail() {
     }
 }
 
-async function getUnitTypeAllCreateHtmlOptions(idName)
+async function getUnitTypeAllCreateHtmlOptions(idName,valSelected = null)
 {
     try
     {
@@ -172,7 +187,8 @@ async function getUnitTypeAllCreateHtmlOptions(idName)
             
             const elemOption = document.createElement("OPTION");
             elemOption.value = datas.Id;
-            elemOption.innerText = datas.Name;       
+            elemOption.innerText = datas.Name;  
+            if(valSelected == datas.Id) elemOption.setAttribute('selected',true);     
             await document.getElementById(idName).appendChild(elemOption);     
         });
         
@@ -186,10 +202,11 @@ async function getUnitTypeAllCreateHtmlOptions(idName)
     }
 }
 
-async function addProductImages()
+async function addProductImages(val = null)
 {
     try
     {
+        const srcImg = val != null ? `Assets/Images/Products/${val}` : '';
         const htmlStr = `
             <div class='row border-bottom-dark pb-2' id='rowProductImg${_idRowImg}'>
                 <div class="col-lg-12 px-auto" name="numberImgProduct[]">
@@ -206,14 +223,24 @@ async function addProductImages()
                         <label class="custom-file-label" id="uploadTextImg${_idRowImg}" for="uploadImgProduct${_idRowImg}">Choose file</label>
                     </div>
                 </div>
-                <div class='col-lg-12'>
+                <div class='col-lg-12' id='colProductImg${_idRowImg}'>
                     <canvas id="dataProductImg${_idRowImg}" class="fabric-canvas" 
                     width="700px;" height="700px;" name='DataProductImg[]'></canvas>
                 </div>
             </div>
         `;
-        _idRowImg++;
+
         await $('#productImages').append(htmlStr);
+        if(srcImg != '') {
+            const dataImgHtml = `<img id='dataProductImg${_idRowImg}' src='${srcImg}' >`;
+            const slashSplit = srcImg.split('/');
+            const positionFocus = parseInt(slashSplit.length) - parseInt(1);
+            const getFileName = slashSplit[positionFocus];
+            await $(`#colProductImg${_idRowImg}`).html(dataImgHtml);
+            await $(`#uploadImgProduct${_idRowImg}`).attr('disabled',true);
+            await $(`#uploadTextImg${_idRowImg}`).text(getFileName);
+        }
+        _idRowImg++;
         await createConcatTextNumberMulti('numberImgProduct[]','รูปภาพที่');
         return true;
     }
@@ -303,7 +330,38 @@ async function switchAutoGenIdBarcode(idRow) {
     }
 }
 
-addProductPriceDetail();
+async function getProductDetail(response)
+{
+    try
+    {
+        const res = response;
+        document.getElementsByName('ProductName')[0].value = res.Content.ProductName;
 
+        for(datas of res.Content.RelatedProducts)
+        {
+            await addProductRelatedName(datas.Name);
+        }
+
+        const detailAboutProduct =  res.Content.DetailAboutProduct != '' ? res.Content.DetailAboutProduct : '-';
+        document.getElementsByName('DetailAboutProduct')[0].value = detailAboutProduct;
+
+        for(let datas of res.Content.Prices)
+        {
+            await addProductPriceDetail(datas);
+        }
+
+        for(let datas of res.Content.Images)
+        {
+            await addProductImages(datas.FileName);
+        }
+
+        return true;
+    }
+    catch(err)
+    {
+        alert(`Function getProductDetail Error : ${err.message}`);
+        return false;
+    }
+}
 
 </script>

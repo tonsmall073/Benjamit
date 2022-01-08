@@ -1,7 +1,6 @@
 async function openDetailProductFormModal(idProductNumber)
 {
     try {
-        await $('#productDetailModal').modal('show');
         const res = await asyncSendPostApi('Services/Product/Product.controller.php',
         {
             "Controller" : 'GetProductDetail',
@@ -9,6 +8,8 @@ async function openDetailProductFormModal(idProductNumber)
             "Password" : _Password,
             "IdProductName" : idProductNumber
         });
+        
+        await $('#productDetailModal').modal('show');
         
         await $('#productDetailModalLabel').html(`<b>สินค้า : </b>${res.Content.ProductName}`);
 
@@ -191,7 +192,7 @@ async function openDetailProductFormModal(idProductNumber)
             const idBarcodeBase64 = document.querySelector(`#productPriceDetail #productBarcode${i}`).src;
             
             document.querySelector(`#productPriceDetail #productBarcodePrint${i}`).href = 
-            `Views/Print/ProductBarcode.php?Username=${_Username}&FileName=${idBarCode}&ImgBase64=${idBarcodeBase64}`;
+            `Views/Print/ProductBarcodePDF.php?Username=${_Username}&FileName=${idBarCode}&ImgBase64=${idBarcodeBase64}`;
 
         }
 

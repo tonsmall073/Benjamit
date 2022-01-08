@@ -67,6 +67,7 @@
 <!--End model -->
 <script src='Assets/JavaScripts/Products/AddProduct.js'></script>
 <script src='Assets/JavaScripts/Products/DetailProduct.js'></script>
+<script src='Assets/JavaScripts/Products/EditProduct.js'></script>
 <script>
 async function openAddProductFormModal() {
     try {
@@ -438,7 +439,7 @@ async function getAllProductBoxPattern(idRender,valSearch = null,valStart,valLim
                     <button class='btn btn-md btn-primary' onclick='openDetailProductFormModal(${datas.Id});'>ดูข้อมูลเพิ่ม</button>
                 </div>
                 <div class='col-md-6'>
-                    <button class='btn btn-md btn-warning' onclick='openEditProductFormModal(${datas.Id})'>แก้ไขข้อมูล</button>
+                    <button class='btn btn-md btn-warning' onclick='openEditProductFormModal(${datas.Id},"${datas.Name}")'>แก้ไขข้อมูล</button>
                 </div>
             </div>
             `;
@@ -464,9 +465,29 @@ async function getAllProductBoxPattern(idRender,valSearch = null,valStart,valLim
     const row = document.createElement
 }
 
-async function openEditProductFormModal(idProductNumber)
+async function openEditProductFormModal(idProductNumber,valProductName)
 {
-
+    try {
+        const res = await asyncSendPostApi('Services/Product/Product.controller.php',
+        {
+            "Controller" : 'GetProductDetail',
+            "Username" : _Username,
+            "Password" : _Password,
+            "IdProductName" : idProductNumber
+        });
+        
+        await $('#productModalLabel').html(`<i class='bi bi-plus'></i> แก้ไขข้อมูลสินค้า : ${valProductName}`);
+        await $('#productModalBody').load('Views/Product/EditProductModal.php',async () => {
+            return await getProductDetail(res);
+        });
+        await $('#productModalButton').attr('onclick', 'editProduct();');
+        await $('#productModal').modal('show');
+        
+        return true;
+    } catch (err) {
+        alert(`Function openEditProductFormModal Error : ${err.message}`);
+        return false;
+    }
 }
 
 async function switchActiveStatusProduct(elem,idProductNumber,textProduct = null)

@@ -124,6 +124,7 @@ class DatasListResponse
 class PricesListResponse
 {
     public float $SalePrice = 0;
+    public int $IdUnitName = 0;
     public string $UnitName;
     public string $IdBarcode;
     public float $CostPrice = 0;

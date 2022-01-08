@@ -675,6 +675,7 @@ class ProductService
             $row = $modelRes->Content->arrayPushPricesList();
             $modelRes->Content->Prices[$row]->CostPrice = $datas['CostPrice'];
             $modelRes->Content->Prices[$row]->SalePrice = $datas['SalePrice'];
+            $modelRes->Content->Prices[$row]->IdUnitName = $datas['IdUnitName'];
             $modelRes->Content->Prices[$row]->UnitName = $datas['UnitName'];
             $modelRes->Content->Prices[$row]->IdBarcode = $datas['IdBarcode'];
         }
@@ -812,6 +813,7 @@ class ProductService
             `ProductPrice`.`IdUnitType`,
             `ProductPrice`.`IdBarcode`,
             `ProductPrice`.`ActiveStatus`,
+            `UnitType`.`Id` AS IdUnitName,
             `UnitType`.`UnitName` 
             FROM `ProductPrice` 
             LEFT JOIN UnitType ON (`ProductPrice`.`IdUnitType` = `UnitType`.`Id`) 
